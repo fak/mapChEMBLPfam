@@ -20,7 +20,7 @@ def master(release, user, pword):
 
 if __name__ == '__main__':
   import sys
-  if len(sys.argv) < 2:  # the program name and the two arguments
+  if len(sys.argv) < 4:  # the program name and the two arguments
     sys.exit("Must specify a dictionary of the form pfamDict[target]['count'] and \
   a lsit of targets")
     
