@@ -7,12 +7,12 @@ Function:  getUniprotTargets
   momo.sander@googlemail.com
 """
 
-def getUniprotTargets(release, user, pword):
+def getUniprotTargets(release, user, pword, host, port):
 
   import queryDevice
   
   rawtargets = queryDevice.queryDevice("SELECT protein_accession\
-    FROM target_dictionary WHERE db_source IN('SWISS-PROT', 'TREMBL')", release, user, pword)
+    FROM target_dictionary WHERE db_source IN('SWISS-PROT', 'TREMBL')", release, user, pword, host, port)
 
   targets= []
   tids = []

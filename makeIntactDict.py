@@ -7,7 +7,7 @@
   momo.sander@ebi.ac.uk
 """         
     
-def mkIntactDictAllPDBs(threshold, release, user, pword):
+def mkIntactDictAllPDBs(release, user, pword, host, port):
 
   import pickle
   import queryDevice
@@ -17,7 +17,7 @@ def mkIntactDictAllPDBs(threshold, release, user, pword):
   JOIN activities act ON cr.molregno = act.molregno \
   JOIN assay2target a2t ON act.assay_id = a2t.assay_id \
   JOIN target_dictionary td ON a2t.tid = td.tid \
-  WHERE src_id = 6 AND protein_accession IS NOT NULL", release, user, pword)
+  WHERE src_id = 6 AND protein_accession IS NOT NULL", release, user, pword, host, port)
   
   intactDict = {}
   molDict = {}

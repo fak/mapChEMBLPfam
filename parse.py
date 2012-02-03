@@ -17,8 +17,9 @@ def col2keys(path,col, header):
   lines = infile.readlines()
   keyDict = {}
   for line in lines[i:]:
-    x = line.split('\t')   
-    keyDict[x.rstrip('\n')] = 0
+    x = line.split('\t')
+    x = x[col].rstrip('\n')  
+    keyDict[x] = 0
   return keyDict
 
 def col2list(path, col, header): 
@@ -30,7 +31,7 @@ def col2list(path, col, header):
   ll = []
   for line in lines[i:]:
     elements = line.split('\t')
-    element = int(elements[col].rstrip('\n'))
+    element = elements[col].rstrip('\n')
     ll.append(element)
   return ll                                                                     
 

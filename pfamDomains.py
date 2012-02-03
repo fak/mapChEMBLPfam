@@ -6,16 +6,16 @@ creates pfamDict and pfam_domains
 
 """  
 
-def pfamDomains(release, user, pword): 
+def pfamDomains(release, user, pword, host, port): 
  
-  import getUniProtTargets
+  import getUniprotTargets
   import parse
   import getAllTargets
   import getPfamDomains
-  import exportPfamDict
+  import export
 
   ## Get all ChEMBL targets with a Uniprot accession.
-  chemblTargets = getUniProtTargets.getUniprotTargets(release)
+  chemblTargets = getUniprotTargets.getUniprotTargets(release, user, pword, host, port)
   
   ## Read all human protein coding genes
   humanProtCodUniq = parse.col2keys('data/proteinCoding.tab', 0, True)
@@ -23,12 +23,12 @@ def pfamDomains(release, user, pword):
   print "We are dealing with %s human proteins" %len(humanTargets)
   
   ## Generate a list of all targets that are to be fed into the getPfamDomain procedure.
-  allTargets = getAllTargets.getAllTargets(humanTargets)
+  allTargets = getAllTargets.getAllTargets(humanTargets, chemblTargets)
   allTargets = allTargets.keys()
 
   ## Get the domains by parsing Pfam. This step takes long and therefore pickles out the domainDict.
-  pfamDict = getPfamDomains.getDomains(allTargets, release)  
+  pfamDict = getPfamDomains.getDomains(allTargets[:20], release)  
   
   ## Export the PfamDict as a mysql table.
-  export.exportPfamDict(chemblTargets, pfamDict, release, user, pword)
+  export.exportPfamDict(chemblTargets, pfamDict, release, user, pword, host, port)
 

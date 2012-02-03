@@ -6,7 +6,7 @@
   momo.sander@ebi.ac.uk
 """                                       
                                      
-def query(release, user, pword): 
+def query(release, user, pword, host, port): 
                            
 
   import makeIntactDict
@@ -15,7 +15,7 @@ def query(release, user, pword):
   ## Create the pdbDict which stores all the relevant information. The moldict
   ## is a look-up molDict[molregno] = cmpdId.
   
-  (intactDict, molDict) = makeIntactDict.mkIntactDictAllPDBs(threshold, release,usr,pword)
-  pdbDict = queryPDB.queryPDB(molDict, intactDict, threshold, release)
+  (intactDict, molDict) = makeIntactDict.mkIntactDictAllPDBs(release,user,pword, host, port)
+  pdbDict = queryPDB.queryPDB(molDict, intactDict, release)
   
   return pdbDict                   

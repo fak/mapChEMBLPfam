@@ -5,7 +5,7 @@
   momo.sander@ebi.ac.uk
 """                              
 
-def singleDomains(pfamDict, chemblTargets, release):
+def singleDomains(pfamDict, chemblTargets,threshold, release, user, pword, host, port):
   import pickle
   import getLigands
   import filterForTarget
@@ -15,7 +15,7 @@ def singleDomains(pfamDict, chemblTargets, release):
     if target in pfamDict:
       if len(pfamDict[target]['domains']) == 1:
         domain = pfamDict[target]['domains'][0]
-        ligands = getLigands.getLigandsForTarget(target, release)
+        ligands = getLigands.getLigandsForTarget(target, release, user, pword, host, port)
         ligands = filterForTarget.filterForTarget(ligands, threshold)
         for ligand in ligands:
           smiles = ligand[0]
@@ -25,14 +25,14 @@ def singleDomains(pfamDict, chemblTargets, release):
           try:
             single[domain][molregno]['pAfnty'].append(aff)
             single[domain][molregno]['target'].append(target)
-	        single[domain][molregno]['actId'].append(actId)
+	    single[domain][molregno]['actId'].append(actId)
             single[domain][molregno]['smiles']=smiles
           except KeyError:
             try:
               single[domain][molregno] = {}
               single[domain][molregno]['pAfnty']=[]
               single[domain][molregno]['target']=[]
-	          single[domain][molregno]['actId'] = []
+	      single[domain][molregno]['actId'] = []
               single[domain][molregno]['smiles']=smiles
               single[domain][molregno]['pAfnty'].append(aff)
               single[domain][molregno]['target'].append(target)

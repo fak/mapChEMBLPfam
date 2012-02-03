@@ -5,7 +5,7 @@
   
   momo.sander@ebi.ac.uk
 """                        
-def queryPDB(molDict, intactDict, threshold, release):
+def queryPDB(molDict, intactDict, release):
 
   import urllib
   import urllib2
@@ -16,7 +16,7 @@ def queryPDB(molDict, intactDict, threshold, release):
   pdbDict = {}
   url = 'http://www.ebi.ac.uk/pdbe-site/pdbemotif/hitlist.xml'
    
-  for target in intactDict.keys():
+  for target in intactDict.keys()[:4]:
     pdbDict[target] = {}
     for molregno in intactDict[target]:
       try:
@@ -63,7 +63,7 @@ def queryPDB(molDict, intactDict, threshold, release):
     if len(pdbDict[target].keys()) ==0:
       del pdbDict[target]
       
-  out = open('data/pdbDict_%s_chembl%s.pkl' %(threshold, release), 'w')
+  out = open('data/pdbDict_chembl%s.pkl' %(release), 'w')
   pickle.dump(pdbDict, out)
   out.close()
   

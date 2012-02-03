@@ -4,7 +4,7 @@
   Identify targets with one binding site containing domain and at least one other domain and train a generic model
   momo.sander@ebi.ac.uk
 """                              
-def multiDomain(pfamDict, chemblTargets, winners, threshold, release):
+def multiDomain(pfamDict, chemblTargets, winners, threshold, release, user, pword, host, port):
 
   import getLigands
   import filterForTarget
@@ -28,11 +28,11 @@ def multiDomain(pfamDict, chemblTargets, winners, threshold, release):
         smiles = ligand[0]
         aff = ligand[1]
         molregno = ligand[2]
-	    actId = ligand[3]
+	actId = ligand[3]
         try:
           multi[domain][molregno]['pAfnty'].append(aff)
           multi[domain][molregno]['target'].append(target)
-	      multi[domain][molregno]['actId'].append(actId)
+	  multi[domain][molregno]['actId'].append(actId)
           multi[domain][molregno]['smiles']=smiles
         except KeyError:
           try:
@@ -43,13 +43,13 @@ def multiDomain(pfamDict, chemblTargets, winners, threshold, release):
             multi[domain][molregno]['smiles']=smiles
             multi[domain][molregno]['pAfnty'].append(aff)
             multi[domain][molregno]['target'].append(target)
-	        multi[domain][molregno]['actId'].append(actId)
+	    multi[domain][molregno]['actId'].append(actId)
           except KeyError:
             multi[domain]={}
             multi[domain][molregno] = {}
             multi[domain][molregno]['pAfnty']=[]
             multi[domain][molregno]['target']=[]
-	        multi[domain][molregno]['actId'] = []
+	    multi[domain][molregno]['actId'] = []
             multi[domain][molregno]['smiles']=smiles
             multi[domain][molregno]['pAfnty'].append(aff)
             multi[domain][molregno]['target'].append(target)

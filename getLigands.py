@@ -5,7 +5,7 @@
   momo.sander@ebi.ac.uk
 """  
 
-def getLigandsForTarget(target, release): 
+def getLigandsForTarget(target, release, user, pword, host, port): 
 
 
   import queryDevice
@@ -32,6 +32,6 @@ def getLigandsForTarget(target, release):
         			 AND a2t.relationship_type = 'D'\
          			 AND act.standard_type IN('Ki','Kd','IC50', \
 				'EC50','-Log Ki','pKd' , 'pA2', 'pI', 'pKa')" \
-                                        %target, release)
+                                        %target, release, user, pword, host, port)
   return ligands
 

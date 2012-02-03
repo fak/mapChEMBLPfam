@@ -1,18 +1,18 @@
 """
-Function:  redThread 
+Function:  uniprotChembl 
 
 
 momo.sander@googlemail.com
 """
 
-def redThread(release):
+def query(release, user, pword, host, port):
   
   import getBindingSitesUniprot
   import getUniprotTargets
 
 
   ## Get all protein target s from ChEBML.                                       
-  chemblTargets = getUniprotTargets.getUniprotTargets(release)
+  chemblTargets = getUniprotTargets.getUniprotTargets(release, user, pword, host, port)
 
   ## Get binding sites for each target.
   bsDict = getBindingSitesUniprot.getBindingSites(chemblTargets, release)

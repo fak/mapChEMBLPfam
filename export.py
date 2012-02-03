@@ -8,7 +8,7 @@ momo.sander@googlemail.com
 
 """
 
-def exportMapsMySQL(propDict, release): 
+def exportMapsMySQL(propDict, release, user, pword, host, port): 
   import os 
   
   out = open('data/map_pfam.txt', 'w')
@@ -23,18 +23,15 @@ def exportMapsMySQL(propDict, release):
           out.write('%s\t%s\t%s\t%s\t%s\n'%(actId, domain, molregno,target, mapType))
   out.close()
                                                                                
-  os.system("mysql -uroot -pgaed5oTh  -e 'DROP TABLE chembl_%s.map_pfam'"% release)
+  os.system("mysql -u%s -p%s -h%s -P%s  -e 'DROP TABLE chembl_%s.map_pfam'"%(user, pword, host, port, release))
   
-  os.system("mysql -u%s -p%s -e 'CREATE TABLE map_pfam(activity_id VARCHAR(20),\
-             domain VARCHAR(100), molregno INT, protein_accession VARCHAR(20), \
-             mapType VARCHAR(20))' chembl_%s"%(user, pword,release))
+  os.system("mysql -u%s -p%s -h%s -P%s -e 'CREATE TABLE map_pfam(activity_id VARCHAR(20), domain VARCHAR(100), molregno INT, protein_accession VARCHAR(20), mapType VARCHAR(20))' chembl_%s" %(user, pword, host, port, release))
 
-  os.system("mysqlimport -u%s -p%s --lines-terminated-by='\n' --local \
-             chembl_%s data/map_pfam.txt"%(user, pword,release)) 
+  os.system("mysqlimport -u%s -p%s -h%s -P%s --lines-terminated-by='\n' --local chembl_%s data/map_pfam.txt"%(user, pword, host, port, release)) 
 
 
 
-def exportConflsMySQL(conflicts, release): 
+def exportConflsMySQL(conflicts, release, user, pword, host, port): 
   import os 
   
   out = open('data/conflicts.txt', 'w')
@@ -44,19 +41,17 @@ def exportConflsMySQL(conflicts, release):
       out.write('%s\t%s\n'%(target, conflict))
   out.close()
                                                                                
-  os.system("mysql -u%s -p%s  -e 'DROP TABLE chembl_%s.conflicts'"\
-            %(user, pword,release))
+  os.system("mysql -u%s -p%s -h%s -P%s -e 'DROP TABLE chembl_%s.conflicts'"%(user, pword, host, port, release))
   
-  os.system("mysql -u%s -p%s -e 'CREATE TABLE conflicts (protein_accession \
-            VARCHAR(20), conflict VARCHAR(200) )' chembl_%s"%(user, pword,release))
+  os.system("mysql -u%s -p%s -h%s -P%s -e 'CREATE TABLE conflicts (protein_accession "\
+            "VARCHAR(20), conflict VARCHAR(200) )' chembl_%s"%(user, pword, host, port, release))
 
-  os.system("mysqlimport -u%s -p%s "\
-            "--lines-terminated-by='\n' --local chembl_%s data/conflicts.txt"\
-            %(user, pword,release)) 
-
+  os.system("mysqlimport -u%s -p%s -h%s -P%s "\
+            "--lines-terminated-by='\n' --local chembl_%s data/conflicts.txt"%(user, pword, host, port, release)) 
 
 
-def exportPfamDict(targets,pfamDict, release, user, pword):
+
+def exportPfamDict(targets,pfamDict, release, user, pword, host, port):
   import os
   
   print "Writing Pfam Dict to MySQL chembl_%s.pfam_domains"%release
@@ -73,17 +68,12 @@ def exportPfamDict(targets,pfamDict, release, user, pword):
       print 'Couldn\'t find ', target,' in PfamDict.' 
   out.close() 
   
-  os.system("mysql -u%s -p%s -e 'DROP TABLE chembl_%s.pfam_domains'"\
-    % (user, pword,release))
+  os.system("mysql -u%s -p%s -h%s -P%s -e 'DROP TABLE chembl_%s.pfam_domains'" % (user, pword, host, port, release))
   
-  os.system("mysql -u%s -p%s -e 'CREATE TABLE pfam_domains(protein_accession \
-             VARCHAR(20), domain VARCHAR(100),start INT, end INT)' chembl_%s"\
-             %(user, pword,release))
-  os.system("cp data/pfam_domains_%s.txt data/pfam_domains.txt" % release)
-  os.system("mysqlimport -u%s -p%s --lines-terminated-by='\n' --local \
-             chembl_%s data/pfam_domains.txt"%(user, pword,release))
-  
- 
-if __name__ == '__main__':
+  os.system("mysql -u%s -p%s -h%s -P%s -e 'CREATE TABLE pfam_domains(protein_accession VARCHAR(20), domain VARCHAR(100),start INT, end INT)' chembl_%s"%(user, pword, host, port, release))
 
-  export(targets,release, pfamDict) 
+  os.system("cp data/pfam_domains_%s.txt data/pfam_domains.txt" % release)
+
+  os.system("mysqlimport -u%s -p%s -h%s -P%s --lines-terminated-by='\n' --local chembl_%s data/pfam_domains.txt"%(user, pword, host, port ,release))
+  
+
