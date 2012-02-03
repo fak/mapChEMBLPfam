@@ -16,8 +16,8 @@ def master(release, user, pword, host, port):
   import pdbChembl
   import uniprotChembl
 
-  os.system("R CMD BATCH --vanilla getPfamStats.R")
-  #pfamDomains.pfamDomains(release, user, pword, host, port)
+  os.system("R CMD BATCH --vanilla queryBioMaRt.R")
+  pfamDomains.pfamDomains(release, user, pword, host, port)
   mapPfamDomains.mapPDs(release, user, pword, host, port)
   pdbDict = pdbChembl.query(release, user, pword, host, port)
   uniprotDict = uniprotChembl.query(release, user, pword, host, port)
@@ -28,8 +28,7 @@ if __name__ == '__main__':
 
   if len(sys.argv) < 5:  # the program name and the two arguments
 
-    sys.exit("Must specify a dictionary of the form pfamDict[target]['count'] and \
-  a lsit of targets")
+    sys.exit("Must specify release, user, pword, host, port")
 
     
   release = sys.argv[1]

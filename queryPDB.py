@@ -16,7 +16,7 @@ def queryPDB(molDict, intactDict, release):
   pdbDict = {}
   url = 'http://www.ebi.ac.uk/pdbe-site/pdbemotif/hitlist.xml'
    
-  for target in intactDict.keys()[:4]:
+  for target in intactDict.keys():
     pdbDict[target] = {}
     for molregno in intactDict[target]:
       try:

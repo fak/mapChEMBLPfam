@@ -27,7 +27,7 @@ def pfamDomains(release, user, pword, host, port):
   allTargets = allTargets.keys()
 
   ## Get the domains by parsing Pfam. This step takes long and therefore pickles out the domainDict.
-  pfamDict = getPfamDomains.getDomains(allTargets[:20], release)  
+  pfamDict = getPfamDomains.getDomains(allTargets, release)  
   
   ## Export the PfamDict as a mysql table.
   export.exportPfamDict(chemblTargets, pfamDict, release, user, pword, host, port)

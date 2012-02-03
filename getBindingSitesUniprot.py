@@ -12,7 +12,7 @@ def getBindingSites(targets,release):
   import xml.parsers.expat
   import pickle
   bsDict ={}
-  for target in targets[:4]:
+  for target in targets:
     try:
       print "searching binding sites for %s" % target
       bsDict[target] = {}
