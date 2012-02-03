@@ -25,14 +25,12 @@ def master(release, user, pword, host, port):
 
 if __name__ == '__main__':
   import sys
-<<<<<<< HEAD
+
   if len(sys.argv) < 5:  # the program name and the two arguments
-    sys.exit("Must specify release, user, password, host and port for mySQL connection.")
-=======
-  if len(sys.argv) < 4:  # the program name and the two arguments
+
     sys.exit("Must specify a dictionary of the form pfamDict[target]['count'] and \
   a lsit of targets")
->>>>>>> 88ce6159722cc0e2584b54dadf026ee7f066fc8a
+
     
   release = sys.argv[1]
   user = sys.argv[2]
