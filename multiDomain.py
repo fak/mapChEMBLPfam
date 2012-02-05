@@ -21,7 +21,7 @@ def multiDomain(pfamDict, chemblTargets, winners, threshold, release, user, pwor
           candidates[domain]=0
         
     if len(candidates.keys()) == 1 and len(pfamDict[target]['domains']) >1:
-      ligands = getLigands.getLigandsForTarget(target, release)
+      ligands = getLigands.getLigandsForTarget(target, release, user, pword, host, port)
       ligands = filterForTarget.filterForTarget(ligands, threshold)
       domain = candidates.keys()[0]
       for ligand in ligands:
