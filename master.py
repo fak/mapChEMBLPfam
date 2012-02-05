@@ -19,7 +19,7 @@ def master(release, user, pword, host, port):
   #os.system("R CMD BATCH --vanilla queryBioMaRt.R")
   #pfamDomains.pfamDomains(release, user, pword, host, port)
   mapPfamDomains.mapPDs(release, user, pword, host, port)
-  #ipdbDict = pdbChembl.query(release, user, pword, host, port)
+  #pdbDict = pdbChembl.query(release, user, pword, host, port)
   #uniprotDict = uniprotChembl.query(release, user, pword, host, port)
 
 
