@@ -56,6 +56,9 @@ def mapPDs(release, user, pword, host, port):
 
   ## Export the mapping to a mySQL table.
   import export
+  import pickle
+  outfile = open('data/propDict_%s' %release, 'w')
+  pickle.dump(propDict, outfile)
   export.exportMapsMySQL(propDict, release, user, pword, host, port)
   export.exportConflsMySQL(conflicts, release ,user, pword, host, port)
   
