@@ -19,24 +19,25 @@ def dictionary(dict_x, propDict, blacklist, maptype):
       medAfnty = np.median(dict_x[domain][molregno]['pAfnty'])
       smiles = dict_x[domain][molregno]['smiles']
       targets = dict_x[domain][molregno]['target']
-      docId = dict_x[domain][molregno]['actId']
+      actId = dict_x[domain][molregno]['actId']
 
       lkp = {}
-      for target in targets:
+      for i,target in enumerate(targets):
         if target in blacklist:
           lkp[target] = 0
           print 'excluding:', target, 'for domain', domain
       for target in lkp.keys():
-        targets.remove(target)
+        del targets[i]
+        del actId[i]
       if len(targets) == 0:
         print 'dropping entry: ', molregno
         continue
 
       try:
-        propDict[domain].append([molregno, smiles, targets,medAfnty,docId, maptype])
+        propDict[domain].append([molregno, smiles, targets,medAfnty,actId, maptype])
       except KeyError:
         propDict[domain] = []
-        propDict[domain].append([molregno, smiles, targets, medAfnty,docId, maptype])
+        propDict[domain].append([molregno, smiles, targets, medAfnty,actId, maptype])
 
   return propDict
 
