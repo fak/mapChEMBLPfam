@@ -15,7 +15,6 @@ def exportMapsMySQL(propDict, release, user, pword, host, port):
   for domain in propDict.keys():
     for data in propDict[domain]:
       actIds = data[4]
-      print actIds, data[2],data[5]
       if actIds != 'manual':
         for i,actId in enumerate(actIds):
           molregno = data[0]

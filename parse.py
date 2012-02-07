@@ -42,7 +42,7 @@ def rdstatLogs(path):
   lines = infile.readlines()
   elements = lines[0].split('\t') 
   al = float(elements[2])
-  minx = int(elements[4])
+  minx = float(elements[4])
   return(al, minx)
 
 

@@ -2,7 +2,9 @@
   Function:  mapPDsa
   --------------------
   Carry out the mapping and save results.
-  
+
+  Author:
+  Felix Kruger
   momo.sander@googlemail.com
 """                              
 def mapPDs(release, user, pword, host, port): 
@@ -57,7 +59,7 @@ def mapPDs(release, user, pword, host, port):
   ## Export the mapping to a mySQL table.
   import export
   import pickle
-  outfile = open('data/propDict_%s' %release, 'w')
+  outfile = open('data/propDict_%s.pkl' %release, 'w')
   pickle.dump(propDict, outfile)
   export.exportMapsMySQL(propDict, release, user, pword, host, port)
   export.exportConflsMySQL(conflicts, release ,user, pword, host, port)

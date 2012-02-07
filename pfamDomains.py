@@ -3,7 +3,9 @@ Function:  pfamDomains
 
 creates pfamDict and pfam_domains
   --------------------
-
+  Author:
+  Felix Kruger
+  momo.sander@googlemail.com
 """  
 
 def pfamDomains(release, user, pword, host, port): 
@@ -18,7 +20,7 @@ def pfamDomains(release, user, pword, host, port):
   chemblTargets = getUniprotTargets.getUniprotTargets(release, user, pword, host, port)
   
   ## Read all human protein coding genes
-  humanProtCodUniq = parse.col2keys('data/proteinCoding.tab', 0, True)
+  humanProtCodUniq = parse2col('data/proteinCoding.tab', True, 1, 0)
   humanTargets = humanProtCodUniq.keys()
   print "We are dealing with %s human proteins" %len(humanTargets)
   

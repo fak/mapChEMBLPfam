@@ -34,7 +34,8 @@ def getDomains(targets,release):
       errors.append(target)
       del pfamDict[target]
       continue
-      
+
+    
     for pfam in dom.childNodes:
       if pfam.nodeName == 'pfam':
         for entry in pfam.childNodes:
