@@ -6,7 +6,7 @@
   Felix Kruger
   momo.sander@googlemail.com
 """                                                  
-def getRatio(pfamDict,humanTargets):
+def getRatio(pfamDict,humanTargets, release, user, pword, host, port):
  
   import numpy as np
   
@@ -17,7 +17,10 @@ def getRatio(pfamDict,humanTargets):
       continue    
     domresids = 0
     domains = pfamDict[target]['domains']
-    length  = len(humanTargets[target])-1
+    try:
+      length  = len(humanTargets[target])-1
+    except KeyError:
+      length  = queryDevice.queryDevice("SELECT protein_sequence FROM target_dictionary WHERE protein_accession = '%s'"%target, release, user, pword, host, port)
     i=0
     for i in range(len(pfamDict[target]['domains'])):
       start  = pfamDict[target]['start'][i]         

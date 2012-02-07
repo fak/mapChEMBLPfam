@@ -18,7 +18,7 @@ def pfamStat(chemblTargets, humanTargets, pfamDict, release, user, pword, host, 
       humChemblTargets[target] = humanTargets[target]
 
   ## For each target in PfamDict, calculate the ratio of domain over non-domain regions.
-  pfamDict = getRatioUnstruct.getRatio(pfamDict,humanTargets)
+  pfamDict = getRatioUnstruct.getRatio(pfamDict,humanTargets, release, user, pword, host, port)
   
   ## Get vectors of domain counts and fractions of structured residues for plotting.
   (humanUniqCounts,humanCounts,humanLengths,lenRatiosHuman) = prepareForPlot.getCounts(humanTargets, pfamDict, release, user, pword, host, port)
