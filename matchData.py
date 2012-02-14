@@ -13,7 +13,7 @@ def uniprot(bsDict, pfamDict, release):
     try:
       pfamDict[target]
     except KeyError:
-      print 'No prediction for %s'%target
+      #print 'No prediction for %s'%target
       del bsDict[target]
       continue
     bsDict[target]['prediction'] = []
@@ -60,7 +60,7 @@ def pdbe(pdbDict,pfamDict, release):
           start =pfamDict[target]['start'][i]
           end = pfamDict[target]['end'][i]
           i+=1
-          print 'Interacting residue, start, end:', pos, start, end, '\n' 
+          #print 'Interacting residue, start, end:', pos, start, end, '\n' 
           if pos >= start  and pos <= end :
             pred = True
         try:
@@ -89,8 +89,9 @@ def pdbePredicted(pdbDict, intacts, molDict, release, mapType):
     start = intact[3]
     end = intact[4]
     molregno = intact[2]
-    code = molDict[molregno]
-    if code == 0:  
+    try:
+      code = molDict[molregno]
+    except KeyError:  
       continue
     try:
       pdbDict[target][code]
@@ -101,7 +102,7 @@ def pdbePredicted(pdbDict, intacts, molDict, release, mapType):
       pos = int(pos)
       i = 0
       pred = False
-      print 'Interacting residue, start, end:', pos, start, end, '\n' 
+      #print 'Interacting residue, start, end:', pos, start, end, '\n' 
       if pos >= start  and pos <= end :
         pred = True
       preds.append(pred)

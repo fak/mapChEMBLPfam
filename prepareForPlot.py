@@ -50,13 +50,12 @@ def getCounts(targets, pfamDict, release, user, pword, host, port):
     try:
       pfamDict[target]
     except KeyError:
-      print 'not found...', target
+      #print 'not found...', target
       continue
       
     uniqDomainCount.append(pfamDict[target]['countUnique'])
     domainCount.append(pfamDict[target]['count'])
     seq = targets[target]
-    print target, seq
     protLength.append(len(seq)-1) 
     ratio = pfamDict[target]['ratio']
     if ratio > 1:

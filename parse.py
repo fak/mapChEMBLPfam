@@ -6,6 +6,20 @@
   
   momo.sander@googlemail.com
 """                              
+def col2fltlist(path, col, header): 
+  i = 0
+  if header == True:
+    i =1
+  infile  = open(path, 'r')
+  lines = infile.readlines()
+  ll = []
+  for line in lines[i:]:
+    elements = line.split('\t')
+    element = elements[col].rstrip('\n')
+    ll.append(float(element))
+  return ll  
+
+
 
 
 def col2keys(path,col, header): 

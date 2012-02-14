@@ -44,6 +44,10 @@ def analysis(release, user, pword, host, port):
   infile.close()
   print 'number of targets with binding site information', len(uniprotDict.keys())
 
+  ## Generate a mapping of PDBe identifiers and molregnos.
+  import generateMolDict
+  molDict = generateMolDict.generateMolDict(release, user, pword, host, port)
+
 
   ####
   #### Generate Plots.
@@ -79,8 +83,7 @@ def analysis(release, user, pword, host, port):
   os.system("R CMD BATCH --vanilla -%s barPlot.R"%(groups))
 
   ## Plot the evaluation of the mappings.
-  import getIntacts
-  import generateMolDict
+  import queryDevice
   import matchData
   import evaluatePred
   import os
@@ -88,11 +91,10 @@ def analysis(release, user, pword, host, port):
   predLs = {}
   for mapType in mapTypes:
     intacts = queryDevice.queryDevice("SELECT mpf.protein_accession,mpf.domain,mpf.molregno,  pfd.start, pfd.end FROM map_pfam mpf JOIN pfam_domains pfd ON pfd.protein_accession = mpf.protein_accession WHERE mpf.maptype = '%s' AND mpf.domain = pfd.domain"% mapType, release, user, pword, host, port)
-    molDict = generateMolDict.gen(intacts,  release)
     predList = matchData.pdbePredicted(pdbDict,  intacts, molDict, release, mapType)
     predLs[mapType] = predList
 
-  evaluatePred.prepPlot(predLs, mapTypes)
+  specStr = evaluatePred.prepPlot(predLs, mapTypes)
   os.system("R CMD BATCH --vanilla -%s stackBarPlot.R"%(specStr))
 
 
@@ -104,15 +106,16 @@ def analysis(release, user, pword, host, port):
   ##     frequent domains
   import countFreqs
   import plplot
+  import plplotRaw
   import parse 
   countFreqs.countLigs(humanTargets, chemblTargets, release ,user, pword, host, port)
   countFreqs.countDoms(humanTargets, pfamDict)
   filenames = ['genFreq.tab', 'domLigs.tab', 'targLigs.tab']
 
   for filename in filenames:
-    os.system('R CMD BATCH --vanilla -%s statPowerLaw.R' %filename)
+    os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s statPowerLaw.R' %filename)
     al, minx = parse.rdstatLogs('data/powerLawLog%s' % filename)
-    freqs = parse.col2list('data/%s'%filename, 1, True)
+    freqs = parse.col2fltlist('data/%s'%filename, 1, True)
     plplot.plplot(freqs, minx, al, filename)
     plplotRaw.plplotRaw(freqs, filename) 
 

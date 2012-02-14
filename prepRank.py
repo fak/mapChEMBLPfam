@@ -51,7 +51,7 @@ def prepRank():
 
     for tup in ligRankTups:
       if tup[1] < threshold:
-        print tup[0], ' has less than %s ligands' %threshold
+        #print tup[0], ' has less than %s ligands' %threshold
         yr2.append(ligRanks[tup[0]])
         break
   return genRankL, ligRankL, yr2

@@ -9,6 +9,8 @@ plot a basic histogram directly from python.
 """
 
 def plotHist(x,y,app):
+  import matplotlib
+  matplotlib.use('Agg') 
   import matplotlib.pyplot as plt
   import numpy as np
   
@@ -30,6 +32,8 @@ def plotHist(x,y,app):
   print 'edges:\t',edges  
   
 def plotEmpCDF(x,app):
+  import matplotlib
+  matplotlib.use('Agg') 
   import matplotlib.pyplot as plt
   
   plt.grid(True)  
@@ -44,6 +48,8 @@ def plotEmpCDF(x,app):
   
 
 def ratioPlots(x,app):
+  import matplotlib
+  matplotlib.use('Agg') 
   import matplotlib.pyplot as plt
  
   plt.grid(True)  
@@ -66,6 +72,8 @@ def ratioPlots(x,app):
   momo.sander@ebi.ac.uk
 """     
 def rankPlot(genRankL, ligRankL, rectBords):
+  import matplotlib
+  matplotlib.use('Agg') 
   import matplotlib.pyplot as plt
   import matplotlib.patches as ptch
   import numpy as np

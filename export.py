@@ -75,5 +75,30 @@ def exportPfamDict(targets,pfamDict, release, user, pword, host, port):
   os.system("cp data/pfam_domains_%s.txt data/pfam_domains.txt" % release)
 
   os.system("mysqlimport -u%s -p%s -h%s -P%s --lines-terminated-by='\n' --local chembl_%s data/pfam_domains.txt"%(user, pword, host, port ,release))
+
+
+"""
+  Export a table of conflicts for classification by Samuel
+"""
+def conflicts4Sam():
+  import queryDevice
+  conflicts = queryDevice.queryDevice("SELECT DISTINCT  mpf.molregno, mpf.domain, dcs.pubmed_id,  con.conflict, mpf.activity_id FROM map_pfam mpf JOIN activities act ON mpf.activity_id = act.activity_id JOIN docs dcs ON dcs.doc_id = act.doc_id JOIN conflicts con ON mpf.protein_accession = con.protein_accession WHERE mapType = 'conflict'", release) 
+  confLkp = {}
+  for conflict in conflicts:
+    confStr = conflict[3]
+    confLkp[confStr] = 0 
+  for confStr in confLkp.keys():
+    out = open('data/forSam_%s.tab'%confStr, 'w')
+    out.write('molregno\tpubmed\tprediction\tactivity_id\n')
+    for conflict in conflicts:
+      if confStr == conflict[3]:
+        molregno = conflict[0]
+        pubmed = conflict[2]
+        domain = conflict[1]
+        actId = conflict[4]
+        out.write('%s\t%s\t%s\t%s\n'%(molregno, pubmed, domain, actId))
+    out.close()
+  return
+
   
 

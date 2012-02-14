@@ -10,8 +10,7 @@ def queryDevice(sqlQuery,ChEMBL_version, usr, pword, hostname, portid ):
   import MySQLdb
   ChEMBL_version
   
-  conn = MySQLdb.connect(host= hostname, user= usr, passwd= pword, \
-                         db = "chembl_%s"% ChEMBL_version, port = portid )
+  conn = MySQLdb.connect(host= hostname, user= usr, passwd= pword, db = "chembl_%s"% ChEMBL_version, port = portid )
 
     	
  	

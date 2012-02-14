@@ -18,7 +18,7 @@ def pdbe(pdbDict, release):
       try:
         pdbDict[target][cmpdId]['prediction']
       except KeyError:
-        print 'no predictions made for:', target, cmpdId
+        #print 'no predictions made for:', target, cmpdId
         continue        
       for pred in pdbDict[target][cmpdId]['prediction']:
         if pred:
@@ -42,7 +42,7 @@ def pdbe(pdbDict, release):
       ligandCount[ligand] = 0 
       for pdb in pdbDict[target][ligand]['pdb']:
         pdbCount[pdb] = 0
-  print 'Counts of Uniprot-Ids, molregnos, PDBs',len(uniprotCount.keys()), \
+  #print 'Counts of Uniprot-Ids, molregnos, PDBs',len(uniprotCount.keys()), \
       len(ligandCount.keys()), len(pdbCount.keys()) 
       
   ## Print the histogram.
@@ -68,7 +68,7 @@ def uniprot(bsDict, release):
     try:
       bsDict[target]['prediction']
     except KeyError:
-      print 'no observations made for:', target
+      #print 'no observations made for:', target
       continue        
     for pred in bsDict[target]['prediction']:
       if pred:
@@ -102,7 +102,7 @@ def prepPlot(predLs, mapTypes):
         specArr[i][0] += 1
       else:
         specArr[i][1] += 1
-        print predList[0]
+        #print predList[0]
 
   specVec = []
   for i, mapType in enumerate(mapTypes):
@@ -110,5 +110,5 @@ def prepPlot(predLs, mapTypes):
     specVec.append(str(specArr[i][1]))
 
   specStr = ','.join(specVec)  
-  return specVec      
+  return specStr   
   

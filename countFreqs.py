@@ -5,13 +5,13 @@
   
   momo.sander@ebi.ac.uk
 """                              
-def countLigs(protCod,chemblTargets, release, user, pword, host, port):
+def countLigs(humanTargets, chemblTargets, release, user, pword, host, port):
   import queryDevice
   ligandPerDom = {}
   ligandPerTarget =  {} 
-  for humGene in protCod.keys():
+  for humGene in humanTargets:
     if not humGene in chemblTargets:
-      print 'could not find', humGene
+      #print 'could not find', humGene
       continue
     qRes = queryDevice.queryDevice("SELECT domain, molregno FROM map_pfam WHERE protein_accession = '%s'"%humGene , release, user, pword, host, port)
     for element in qRes:
@@ -42,13 +42,13 @@ def countLigs(protCod,chemblTargets, release, user, pword, host, port):
   targetOut.close()
 
 
-def countDoms(protCod, pfamDict):
+def countDoms(humanTargets, pfamDict):
   domCount = {}
-  for humGene in protCod.keys():
+  for humGene in humanTargets:
     try: 
       pfamDict[humGene]
     except KeyError:
-      print 'BiomaRt more up to date than pfamDict for: ', humGene
+      #print 'BiomaRt more up to date than pfamDict for: ', humGene
       continue
     for domain in pfamDict[humGene]['domains']:
       try:

@@ -1,23 +1,20 @@
 """
   Function:  generateMolDict
   --------------------
-  Creates a mapping between Molregnos and PDBe identifiers. 
+  Retrieves a list of PDBe identifiers and matches them to molregnos.
   
   momo.sander@ebi.ac.uk
 """                                       
-def gen(intacts, release):
-  import queryDevice
-  
-  molDict = {}
-  for tup in intacts:
-    molDict[tup[2]] = 0
+def generateMolDict(release, user, pword, host, port):
 
-  for molregno in molDict.keys():
-    codes = queryDevice.queryDevice("SELECT compound_key FROM compound_records WHERE molregno = %s AND src_id =6" % molregno, release) 
-    for code in codes:
-      print code[0]
-      molDict[molregno] = code[0]
+  import queryDevice
+
+  cmpds = queryDevice.queryDevice("SELECT molregno, compound_key \
+  FROM compound_records WHERE src_id = 6", release, user, pword, host, port)
+
+  molDict = {}
+  for cmpd in cmpds:
+    molDict[cmpd[0]] = cmpd[1]
 
   return molDict
-
 

@@ -9,6 +9,7 @@
 def getRatio(pfamDict,humanTargets, release, user, pword, host, port):
  
   import numpy as np
+  import queryDevice
   
   for target in pfamDict.keys():
     try:
@@ -18,9 +19,11 @@ def getRatio(pfamDict,humanTargets, release, user, pword, host, port):
     domresids = 0
     domains = pfamDict[target]['domains']
     try:
-      length  = len(humanTargets[target])-1
+      seq = humanTargets[target]
+      length  = len(seq)-1
     except KeyError:
-      length  = queryDevice.queryDevice("SELECT protein_sequence FROM target_dictionary WHERE protein_accession = '%s'"%target, release, user, pword, host, port)
+      seq= queryDevice.queryDevice("SELECT protein_sequence FROM target_dictionary WHERE protein_accession = '%s'"%target, release, user, pword, host, port)
+      length = len(seq)-1
     i=0
     for i in range(len(pfamDict[target]['domains'])):
       start  = pfamDict[target]['start'][i]         
