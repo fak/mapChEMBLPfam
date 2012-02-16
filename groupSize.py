@@ -46,3 +46,24 @@ def groupSize(chemblTargets, pfamDict):
   return args
   
 
+def groupSizeMap(chemblTargets, release, user, pword, host, port): 
+  import queryDevice
+
+  cMult = []
+  cSing = []
+  cNone = []
+  cConf = []
+  
+  cMult = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'multi'", release, user, pword, host, port)
+  
+  cSing = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'single'", release, user, pword, host, port)
+  
+  cConf = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'conflict'", release, user, pword, host, port)
+
+  unmapped = len(chemblTargets) - sum([len(cMult), len(cSing), len(cConf)])
+ 
+    
+  groups = [str(len(cSing)), str(len(cNone)), str(len(cMult)), str(len(cConf))]
+  args  = ','.join(groups)
+  return args
+  

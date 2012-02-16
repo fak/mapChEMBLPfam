@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from math import *
 
@@ -81,6 +83,7 @@ def plplot(x,xmin,alpha, filename):
         plt.draw()
         
     elif f_dattype== 'INTS':
+        #print 'it is an integer'
         n = len(x)
         q = sorted(unique(x))
         c=[]

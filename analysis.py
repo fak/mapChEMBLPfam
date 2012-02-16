@@ -82,6 +82,9 @@ def analysis(release, user, pword, host, port):
   groups = groupSize.groupSize(chemblTargets, pfamDict)
   os.system("R CMD BATCH --vanilla -%s barPlot.R"%(groups))
 
+  groups = groupSize.groupSizeMap(chemblTargets, release, user , pword, host, port)
+  #os.system("R CMD BATCH --vanilla -%s barPlot.R"%(groups))
+
   ## Plot the evaluation of the mappings.
   import queryDevice
   import matchData
@@ -115,7 +118,8 @@ def analysis(release, user, pword, host, port):
   for filename in filenames:
     os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s statPowerLaw.R' %filename)
     al, minx = parse.rdstatLogs('data/powerLawLog%s' % filename)
-    freqs = parse.col2fltlist('data/%s'%filename, 1, True)
+    freqs = parse.col2intlist('data/%s'%filename, 1, True)
+    print len(freqs), minx, al, filename, type(freqs), type(freqs[1])
     plplot.plplot(freqs, minx, al, filename)
     plplotRaw.plplotRaw(freqs, filename) 
 

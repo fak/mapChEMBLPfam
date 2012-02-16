@@ -21,7 +21,7 @@ def getDomains(targets,release):
   ## Loop through all targets and get pfam domains.
   errors = []
   for target in targets:
-    print "getting Pfam domains for %s" % target
+    #print "getting Pfam domains for %s" % target
     pfamDict[target] = {}
     pfamDict[target]["domains"] = []
     pfamDict[target]["start"] = []
@@ -30,7 +30,7 @@ def getDomains(targets,release):
     f = opener.open("http://pfam.sanger.ac.uk/protein/%s?output=xml" % target) 
     dom = parse(f)
     if not dom.getElementsByTagName('sequence'):
-      print "encountered Error for %s" %target
+      #print "encountered Error for %s" %target
       errors.append(target)
       del pfamDict[target]
       continue
