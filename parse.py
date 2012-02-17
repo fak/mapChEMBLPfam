@@ -20,6 +20,19 @@ def col2fltlist(path, col, header):
   return ll  
 
 
+def col2intlist(path, col, header): 
+  i = 0
+  if header == True:
+    i =1
+  infile  = open(path, 'r')
+  lines = infile.readlines()
+  ll = []
+  for line in lines[i:]:
+    elements = line.split('\t')
+    element = elements[col].rstrip('\n')
+    ll.append(int(element))
+  return ll 
+
 
 
 def col2keys(path,col, header): 

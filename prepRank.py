@@ -54,6 +54,16 @@ def prepRank():
         #print tup[0], ' has less than %s ligands' %threshold
         yr2.append(ligRanks[tup[0]])
         break
+        
+        
+        
+ 
+  out = open('data/temp.tab','w')
+  out.write('domain\tgenFreq\tligFreq\n')
+  for dom in ligFreq.keys():
+    out.write('%s\t%s\t%s\n'%(dom, genFreq[dom], ligFreq[dom]))
+  out.close()
+
   return genRankL, ligRankL, yr2
 
 
