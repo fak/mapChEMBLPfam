@@ -4,6 +4,27 @@
 
   momo.sander@ebi.ac.uk
 """  
+def getLigandsForActivity(activity, release, user, pword, host, port): 
+
+
+  import queryDevice
+
+  
+  ligands = queryDevice.queryDevice("SELECT DISTINCT act.molregno, standard_value,\
+	 standard_type, standard_units, canonical_smiles, relation, act.activity_id \
+										\
+                                        FROM activities act \
+                                        JOIN compound_structures cs\
+                                            ON act.molregno = cs.molregno \
+     				 WHERE activity_id = %s" \
+                                        %activity, release, user, pword, host, port)
+  return ligands
+
+                    
+
+
+
+
 
 def getLigandsForTarget(target, release, user, pword, host, port): 
 

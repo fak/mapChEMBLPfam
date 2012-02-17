@@ -49,12 +49,14 @@ def mapPDs(release, user, pword, host, port):
   ## domain. Interface with Sam's text mining process.
   import findConflicts
   conflicts = findConflicts.findConflicts(pfamDict, valid, chemblTargets)
-  ## use Sam's procedure.
+  ## Use input files from Sam to map the conflicts.
+  import fromSam
+  conf = fromSam.fromSam(conflicts, threshold, user, pword, host, release, port)
 
   ## Insert data for conflicts and multi domain proteins
   import feedPropDict
   propDict = feedPropDict.dictionary(multi, propDict, blacklist, 'multi')
-  #propDict = feedPropDict.dictionary(confDict, propDict, blcklist,'conflict')
+  propDict = feedPropDict.dictionary(conf, propDict, blacklist,'conflict')
 
   ## Export the mapping to a mySQL table.
   import export

@@ -57,30 +57,36 @@ def analysis(release, user, pword, host, port):
   ## Plot the histogram of domain numbers per protein and the boxplot of the ratios
   ## of structured over unstructured regions.
   import pfamStat
-  pfamStat.pfamStat(chemblTargets, humanProtCodUniq, pfamDict, release, user, pword, host, port)
+  #pfamStat.pfamStat(chemblTargets, humanProtCodUniq, pfamDict, release, user, pword, host, port)
 
   ## Assess small molecule binding within Pfam domains for PDBe entries.
   import plot
   import matchData
   import evaluatePred 
-  pdbDict = matchData.pdbe(pdbDict,pfamDict, release)
-  counts = evaluatePred.pdbe(pdbDict,  release)
-  plot.plotEmpCDF(counts, 'pdb_chembl%s' %release)
+  #pdbDict = matchData.pdbe(pdbDict,pfamDict, release)
+  #counts = evaluatePred.pdbe(pdbDict,  release)
+  #plot.plotEmpCDF(counts, 'pdb_chembl%s' %release)
   
   ## Assess small molecule binding within Pfam domains for Uniprot entries.  
   import plot
   import matchData
   import evaluatePred  
-  uniProtDict = matchData.uniprot(uniprotDict,pfamDict,  release)
-  counts  = evaluatePred.uniprot(uniprotDict, release)
-  plot.plotEmpCDF(counts, 'uniprot_chembl%s' %release) 
+  #uniProtDict = matchData.uniprot(uniprotDict,pfamDict,  release)
+  #counts  = evaluatePred.uniprot(uniprotDict, release)
+  #plot.plotEmpCDF(counts, 'uniprot_chembl%s' %release) 
 
   ## Make a barplot of the group sizes for single, multi-one-valid, multi-no-valid,
   ## multi-multi-valid.  
   import groupSize
   import os
-  groups = groupSize.groupSize(chemblTargets, pfamDict)
-  os.system("R CMD BATCH --vanilla -%s barPlot.R"%(groups))
+  groupsAll = groupSize.groupSize(chemblTargets, pfamDict)
+  #os.system("R CMD BATCH --vanilla -%s barPlot.R"%(groups))
+
+  groupsCovered = groupSize.groupSizeMap(chemblTargets, release, user , pword, host, port)
+  #os.system("R CMD BATCH --vanilla -%s barPlot.R"%(groups))
+  groups = ','.join([groupsAll, groupsCovered])
+  print groups 
+  os.system("R CMD BATCH --vanilla -%s -%s -%s stackBarPlot.R"%(groups, 'groupsBarplot.pdf',4))
 
   ## Plot the evaluation of the mappings.
   import queryDevice
@@ -94,9 +100,11 @@ def analysis(release, user, pword, host, port):
     predList = matchData.pdbePredicted(pdbDict,  intacts, molDict, release, mapType)
     predLs[mapType] = predList
 
-  specStr = evaluatePred.prepPlot(predLs, mapTypes)
-  os.system("R CMD BATCH --vanilla -%s stackBarPlot.R"%(specStr))
-
+  specStr = evaluatePred.prepPlot(predLs, mapTypes )
+  print specStr
+  os.system("R CMD BATCH --vanilla -%s -%s -%s stackBarPlot.R"%(specStr, 'validationBarplot.pdf',3))
+  import sys
+  sys.exit()
 
   ## Power Law Distribution of domain occurences
   ##  Prepare the data for the power law plot.
@@ -115,7 +123,8 @@ def analysis(release, user, pword, host, port):
   for filename in filenames:
     os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s statPowerLaw.R' %filename)
     al, minx = parse.rdstatLogs('data/powerLawLog%s' % filename)
-    freqs = parse.col2fltlist('data/%s'%filename, 1, True)
+    freqs = parse.col2intlist('data/%s'%filename, 1, True)
+    print len(freqs), minx, al, filename, type(freqs), type(freqs[1])
     plplot.plplot(freqs, minx, al, filename)
     plplotRaw.plplotRaw(freqs, filename) 
 
