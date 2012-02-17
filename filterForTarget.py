@@ -6,11 +6,10 @@
 
 def filterForTarget(ligands, threshold):
 
-  print threshold
   import pickle
   import math
   import numpy as np
-  print 'filtering ligands at threshold:', threshold
+  #print 'filtering ligands at threshold:', threshold
   ligandList = []
   for data in ligands:   
     pAfnty=0  

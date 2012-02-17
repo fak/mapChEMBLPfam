@@ -63,7 +63,7 @@ def groupSizeMap(chemblTargets, release, user, pword, host, port):
   unmapped = len(chemblTargets) - sum([len(cMult), len(cSing), len(cConf)])
  
     
-  groups = [str(len(cSing)), str(len(cNone)), str(len(cMult)), str(len(cConf))]
+  groups = [str(len(cSing)), str(unmapped), str(len(cMult)), str(len(cConf))]
   args  = ','.join(groups)
   return args
   
