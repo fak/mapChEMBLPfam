@@ -50,21 +50,25 @@ def groupSize(chemblTargets, pfamDict):
 def groupSizeMap(chemblTargets, release, user, pword, host, port): 
   import queryDevice
 
-  cMult = []
-  cSing = []
-  cNone = []
-  cConf = []
+  multi = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'multi'", release, user, pword, host, port)
   
-  cMult = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'multi'", release, user, pword, host, port)
+  single = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'single'", release, user, pword, host, port)
   
-  cSing = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'single'", release, user, pword, host, port)
-  
-  cConf = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'conflict'", release, user, pword, host, port)
+  conflict = queryDevice.queryDevice("SELECT DISTINCT protein_accession FROM map_pfam WHERE mapType = 'conflict'", release, user, pword, host, port)
 
-  unmapped = len(chemblTargets) - sum([len(cMult), len(cSing), len(cConf)])
  
-    
-  groups = [str(len(cSing)), str(unmapped), str(len(cMult)), str(len(cConf))]
-  args  = ','.join(groups)
-  return args
-  
+  return single,multi, conflict
+ 
+
+def actSizeMap(chemblTargets, release, user, pword, host, port):
+  import queryDevice
+
+  multi = queryDevice.queryDevice("SELECT DISTINCT activity_id FROM map_pfam WHERE mapType = 'multi'", release, user, pword, host, port)
+
+  single = queryDevice.queryDevice("SELECT DISTINCT activity_id FROM map_pfam WHERE mapType = 'single'", release, user, pword, host, port)
+
+  conflict = queryDevice.queryDevice("SELECT DISTINCT activity_id FROM map_pfam WHERE mapType = 'conflict'", release, user, pword, host, port)
+
+
+  return  single,multi, conflict
+ 

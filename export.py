@@ -77,6 +77,38 @@ def exportPfamDict(targets,pfamDict, release, user, pword, host, port):
   os.system("mysqlimport -u%s -p%s -h%s -P%s --lines-terminated-by='\n' --local chembl_%s data/pfam_domains.txt"%(user, pword, host, port ,release))
 
 
+
+
+"""
+  Function:  exportProps
+  --------------------
+  writes the contents of the property dictionary to a table
+  
+  momo.sander@ebi.ac.uk
+"""                                       
+def exportProps(selected, threshold, release, user, pword, host, port): 
+
+  import os  
+  import queryDevice
+  ### Write output to a table.
+  out = open('data/cmpdPropssed.tab', 'w')
+  out.write('domain\tmolregno\tmolweight\tlogP\tHBA\tHBD\tPSA\tMAPTYPE\n')
+  for domain in selected:
+    data = queryDevice.queryDevice("SELECT act.molregno, mw_freebase, acd_logp, HBA, HBD, PSA, mpf.mapType FROM compound_properties cp JOIN molecule_dictionary md ON cp.molregno = md.molregno JOIN activities act ON md.molregno = act.molregno JOIN map_pfam mpf ON act.activity_id =mpf.activity_id WHERE mpf.domain ='%s' AND molecule_type = 'Small molecule'"%domain, release, user, pword, host, port) 
+    for tup in data:
+      out.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(domain, tup[0], tup[1], tup[2], tup[3], tup[4], tup[5], tup[6]))
+      
+  out.close()
+
+  os.system("sed \"s/None/NA/g\" data/cmpdPropssed.tab > \
+    data/cmpdProps_pKi%s_chembl%s.tab" %(int(threshold), release))
+
+
+
+
+
+
+
 """
   Export a table of conflicts for classification by Samuel
 """
