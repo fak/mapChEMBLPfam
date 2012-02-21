@@ -49,6 +49,9 @@ def mapPDs(release, user, pword, host, port):
   ## domain. Interface with Sam's text mining process.
   import findConflicts
   conflicts = findConflicts.findConflicts(pfamDict, valid, chemblTargets)
+  ## Generate output files for Sam.
+  import toSam
+  #toSam.toSam(conflicts, threshold, user, pword, host, release, port)
   ## Use input files from Sam to map the conflicts.
   import fromSam
   conf = fromSam.fromSam(conflicts, threshold, user, pword, host, release, port)

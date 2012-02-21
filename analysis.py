@@ -14,6 +14,11 @@ def analysis(release, user, pword, host, port):
   ####
   #### Load data.
   ####
+  
+  ## Set threshold for all calculations.
+  import numpy as np
+  threshold = -np.log10(50*10**(-6))
+
 
   ## Get all ChEMBL targets with a Uniprot accession.
   import getUniprotTargets
@@ -80,13 +85,12 @@ def analysis(release, user, pword, host, port):
   import groupSize
   import os
   groupsAll = groupSize.groupSize(chemblTargets, pfamDict)
-  #os.system("R CMD BATCH --vanilla -%s barPlot.R"%(groups))
+  print "all possible groups (single, none, multi, conflict):",groupsAll
+  (single, multi, conflict) = groupSize.groupSizeMap(chemblTargets, release, user , pword, host, port)
+  print "all covered targets (single, multi, conflict): ", len(single), len(multi), len(conflict)
+  (single, multi, conflict) = groupSize.actSizeMap(chemblTargets, release, user , pword, host, port)
+  print "all covered targets (single, multi, conflict): ", len(single), len(multi),len(conflict)
 
-  groupsCovered = groupSize.groupSizeMap(chemblTargets, release, user , pword, host, port)
-  #os.system("R CMD BATCH --vanilla -%s barPlot.R"%(groups))
-  groups = ','.join([groupsAll, groupsCovered])
-  print groups 
-  os.system("R CMD BATCH --vanilla -%s -%s -%s stackBarPlot.R"%(groups, 'groupsBarplot.pdf',4))
 
   ## Plot the evaluation of the mappings.
   import queryDevice
@@ -134,4 +138,15 @@ def analysis(release, user, pword, host, port):
   import plot
 
   (genRankL, ligRankL, rectBords) = prepRank.prepRank()
-  plot.rankPlot(genRankL, ligRankL, rectBords)    
+  plot.rankPlot(genRankL, ligRankL, rectBords)   
+
+
+  ## Plot the ligand properties.
+  import export
+  import os
+  selected = ['7tm_1','Pkinase','Pkinase_Tyr','SH2','SNF','Trypsin']
+  filename = 'data/cmpdProps_pKi%s_chembl%s.tab'%(int(threshold), release)
+  export.exportProps(selected, threshold, release, user, pword, host, port)
+  os.system("/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s plotDens.R"%filename)
+
+ 
