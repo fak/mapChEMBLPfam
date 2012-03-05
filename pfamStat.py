@@ -14,8 +14,8 @@ def pfamStat(chemblTargets, humanTargets, pfamDict, release, user, pword, host, 
   ## Get a list of all human (!) ChEMBL targets
   humChemblTargets = {}
   for target in chemblTargets:
-    if target in humanTargets.keys():
-      humChemblTargets[target] = humanTargets[target]
+    if target in humanTargets:
+      humChemblTargets[target] = 0
 
   ## For each target in PfamDict, calculate the ratio of domain over non-domain regions.
   pfamDict = getRatioUnstruct.getRatio(pfamDict,humanTargets, release, user, pword, host, port)
