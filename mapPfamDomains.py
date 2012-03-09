@@ -23,6 +23,32 @@ def mapPDs(release, user, pword, host, port):
   pfamDict = pickle.load(inFile)
   inFile.close()    
 
+  ## Load the uniDict.
+  import parseUniChem
+  uniDict = parseUniChem.parse('data/unichemMappings.txt')
+
+  ## Load the intactDict.          
+  import getIntactDict
+  intactDict =  getIntactDict.getIntacts(uniDict, release, user, pword, host, port)
+  
+  ## Load the pdbDict.
+  import queryPDB
+  pdbDict = queryPDB.queryPDB(uniDict, intactDict, release)
+
+
+  ###    ###    ###     ###  
+  ###    ###    ###     ###
+  ###    ###    ###     ###
+  
+  ### Get primers from pdbe.
+  import mapRes
+  pdbDict_tmp = mapRes.mapRes(pdbDict, pfamDict, release)
+  primers = mapRes.findPrimers(pdbDict)
+  
+  sys.exit()
+
+
+
   ## Get ligands for targets with single domains.
   import singleDomain 
   single = singleDomain.singleDomains(pfamDict, chemblTargets, threshold, release, user, pword, host, port)
