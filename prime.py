@@ -80,7 +80,9 @@ def hier(primers):
   
   momo.sander@ebi.ac.uk
 """
-def mapTargets(chemblTargets, primers, hierDict):
+def mapTargets(chemblTargets, pfamDict,  primers, hierDict):
+  for primer in primers.keys():
+    primers[primer]['targets'] = {}
   for target in chemblTargets:
     try:
       pfamDict[target]
@@ -102,7 +104,7 @@ def mapTargets(chemblTargets, primers, hierDict):
             lkp[domain] = 0
         if sorted(altDomains) == sorted(lkp.keys()):
           alt = True
-          print primer, hierDict[primer]
+          #print primer, hierDict[primer]
           
       if not alt:
         domains = primer.split(' $$$ ')
@@ -111,10 +113,6 @@ def mapTargets(chemblTargets, primers, hierDict):
           if domain in pfamDict[target]['domains']:
             lkp[domain] = 0
         if sorted(domains) == sorted(lkp.keys()):
-          try:
-            primers[primer]['targets'][target]=0
-          except KeyError: 
-            primers[primer]['targets']={}
-            primers[primer]['targets'][target]=0
+          primers[primer]['targets'][target]=0
             
   return primers

@@ -20,7 +20,7 @@ def mapPDs(release, user, pword, host, port):
   ## Load the pfamDict.
   import pickle
   infile = open('data/protCodPfamDict_%s.pkl' %release, 'r')
-  pfamDict = pickle.load(inFile)
+  pfamDict = pickle.load(infile)
   infile.close()    
 
   ## Load the pdbDict.
@@ -34,19 +34,23 @@ def mapPDs(release, user, pword, host, port):
   
   ### Get primers from pdbe.
   import mapRes
+  import prime
   pdbDict = mapRes.mapRes(pdbDict, pfamDict, release)
   primers = prime.findPrimers(pdbDict, pfamDict)
   hierDict = prime.hier(primers)
   
   # Assign protein targets to the primers.
-  primers = prime.mapTargets(chemblTargets, primers, hierDict)  
+  primers = prime.mapTargets(chemblTargets,pfamDict,  primers, hierDict)  
   
   # Find conflicts.
+  import findConflicts
   conflicts = findConflicts.findConflicts(primers)
   confTargets = findConflicts.confTargets(conflicts)
   
-  #Populate the primer classes with active compounds. Exempt compounds occuring in conflicting cases.
-  mpdct = mpdct.mpdct(confTargets, threshold, release, user, pword, host, port)
+  #Populate the primer classes with active compounds. Exempt compounds occuring in conflicting cases.i
+  import mpdct
+  mpdct = mpdct.mpdct(primers,  confTargets, threshold, release, user, pword, host, port)
+  
    
   ## Construct the propDict for targets with one domain and manually 
   ## insert/delete ligands.

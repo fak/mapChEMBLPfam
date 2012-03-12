@@ -27,7 +27,7 @@ def findConflicts(primers):
   
 def confTargets(conflicts): 
   confTargets = []
-  for conf in conflict.keys():
+  for conf in conflicts.keys():
     for target in conflicts[conf]:
       confTargets.append(target)
 

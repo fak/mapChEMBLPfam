@@ -30,4 +30,4 @@ def mapRes(pdbDict,pfamDict, release):
         if not pred:
           pdbDict[target][cmpdId]['domain'].append(pred)
             
-  return pdbDicts
+  return pdbDict
