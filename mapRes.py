@@ -49,14 +49,9 @@ def findPrimers(pdbDict, pfamDict):
         nall = len(pdbDict[target][cmpdId]['domain'])
         ratio = np.true_divide(ndom, nall)
         if ndom > 4 and ratio >= 0.3:
-          try:
-            tmpDict[domain].append(ratio)
-          except KeyError:
-            tmpDict[domain] = []
-            tmpDict[domain].append(ratio)
-
+          tmpDict[domain] = ratio
       # print i, len(pdbDict[target][cmpdId]['domain']), len(pdbDict[target][cmpdId]['pdb']), target, cmpdId
-      primer= ' %%% '.join(tmpDict.keys())
+      primer= ' $$$ '.join(tmpDict.keys())
       ratios = tmpDict.values()
       pdbs = {}
       for pdb in pdbDict[target][cmpdId]['pdb']:
@@ -68,11 +63,11 @@ def findPrimers(pdbDict, pfamDict):
         primers[primer]['cmpdId'].append(cmpdId)
       except KeyError:
         primers[primer] = {}
-        primers[primer]['ratios'] = []
         primers[primer]['pdb'] = []
+        primers[primer]['cmpdId'] = []
+        primers[primer]['ratios'] = []
         primers[primer]['cmpdId'].append(cmpdId)
         primers[primer]['ratios'].append(ratios)
         primers[primer]['pdb'].append(pdbs.keys())
-        primers[primer]['cmpdId'].append(cmpdId)
       
   return primers            
