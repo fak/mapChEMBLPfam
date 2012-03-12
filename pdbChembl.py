@@ -9,13 +9,16 @@
 def query(release, user, pword, host, port): 
                            
 
-  import makeIntactDict
-  import queryPDB
+  ## Load the uniDict.
+  import parseUniChem
+  uniDict = parseUniChem.parse('data/unichemMappings.txt')
 
-  ## Create the pdbDict which stores all the relevant information. The moldict
-  ## is a look-up molDict[molregno] = cmpdId.
+  ## Create the intactDict.          
+  import getIntactDict
+  intactDict =  getIntactDict.getIntacts(uniDict, release, user, pword, host, port)
   
-  (intactDict, molDict) = makeIntactDict.mkIntactDictAllPDBs(release,user,pword, host, port)
-  pdbDict = queryPDB.queryPDB(molDict, intactDict, release)
+  ## Load the pdbDict.
+  import queryPDB
+  pdbDict = queryPDB.queryPDB(uniDict, intactDict, release)
   
   return pdbDict                   
