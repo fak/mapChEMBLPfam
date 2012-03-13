@@ -1,5 +1,5 @@
 """
-  Function:  mapPDsa
+  Function:  mapPDs
   --------------------
   Carry out the mapping and save results.
 

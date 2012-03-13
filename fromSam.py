@@ -26,7 +26,7 @@ def fromSam(conflicts, threshold, user, pword, host, release, port):
       else:
         domain = predMaps[act]       
         ligands = getLigands.getLigandsForActivity(act, release, user, pword, host, port)
-        target = queryDevice.queryDevice("SELECT protein_accession FROM target_dictionary td JOIN assay2target a2t ON a2t.tid = td.tid JOIN activities act ON a2t.assay_id = act.assay_id WHERE activity_id = %s"%act, release, user, pword, host, port) 
+        target = queryDevice.queryDevice("SELECT protein_accession FROM target_dictionary td JOIN assay2target a2t ON a2t.tid = td.tid JOIN activities act ON a2t.assay_id = act.assay_id WHERE activity_id = %s"%act, release, user, pword, host, port)[0][0] 
         
         ligands = filterForTarget.filterForTarget(ligands, threshold)
         for ligand in ligands:

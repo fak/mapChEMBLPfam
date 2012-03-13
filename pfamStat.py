@@ -4,22 +4,31 @@
   --------------------
   momo.sander@googlemail.com
 """                                                  
-def pfamStat(chemblTargets, humanTargets, pfamDict, release, user, pword, host, port):
+def pfamStat(chemblTargets, humChembl, humProtCod, pfamDict, release, user, pword, host, port):
   import prepareForPlot
   import getRatioUnstruct
   reload(prepareForPlot)
   import plot
   reload(plot)
 
-  ## Get a list of all human (!) ChEMBL targets
-  humChemblTargets = {}
-  for target in chemblTargets:
-    if target in humanTargets.keys():
-      humChemblTargets[target] = humanTargets[target]
 
   ## For each target in PfamDict, calculate the ratio of domain over non-domain regions.
-  pfamDict = getRatioUnstruct.getRatio(pfamDict,humanTargets, release, user, pword, host, port)
+  pfamDict = getRatioUnstruct.getRatio(pfamDict, humProtCod, release, user, pword, host, port)
   
+  out = open('data/pfamTable_%s.tab' % release,'w')
+  out.write('target\tnDomains\tpPfam\tsource\n')
+  for i,source in enumerate([chemblTargets, humProtCod.keys(), humChemblTargets.keys()]):
+    for target in source:
+      if target not in pfamDict.keys():
+        continue
+      if pfamDict[target]['ratio'] == 'NA':
+        continue
+      nDomains = len(pfamDict[target]['domains'])
+      pPfam = pfamDict[target]['ratio']
+      srcStr = i
+      out.write('%s\t%s\t%s\t%s\n'%(target, nDomains, pPfam, srcStr))
+  out.close()
+
   ## Get vectors of domain counts and fractions of structured residues for plotting.
   (humanUniqCounts,humanCounts,humanLengths,lenRatiosHuman) = prepareForPlot.getCounts(humanTargets, pfamDict, release, user, pword, host, port)
     

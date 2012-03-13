@@ -26,9 +26,15 @@ def analysis(release, user, pword, host, port):
   
   ## Read all human protein coding genes
   import parse
-  humanProtCodUniq = parse.parse2col('data/proteinCoding.tab', True, 1, 0)
-  humanTargets = humanProtCodUniq.keys()
+  humProtCod = parse.parse2col('data/proteinCoding.tab', True, 1, 0)
+  #humanTargets = humanProtCodUniq.keys()
   print "We are dealing with %s human proteins" %len(humanTargets)
+
+  ## Get a list of all human (!) ChEMBL targets
+  humChembl = {}
+  for target in chemblTargets:
+    if target in humProtCod.keys():
+      humChemblTargets[target] = 0
 
   ## Load the pfamDict.
   import pickle
@@ -62,7 +68,7 @@ def analysis(release, user, pword, host, port):
   ## Plot the histogram of domain numbers per protein and the boxplot of the ratios
   ## of structured over unstructured regions.
   import pfamStat
-  pfamStat.pfamStat(chemblTargets, humanProtCodUniq, pfamDict, release, user, pword, host, port)
+  pfamStat.pfamStat(chemblTargets, humChembl, humProtCod, pfamDict, release, user, pword, host, port)
 
   ## Assess small molecule binding within Pfam domains for PDBe entries.
   import plot
@@ -120,8 +126,8 @@ def analysis(release, user, pword, host, port):
   import plplot
   import plplotRaw
   import parse 
-  countFreqs.countLigs(humanTargets, chemblTargets, release ,user, pword, host, port)
-  countFreqs.countDoms(humanTargets, pfamDict)
+  countFreqs.countLigs(humProtCod.keys(), chemblTargets, release ,user, pword, host, port)
+  countFreqs.countDoms(humProtCod.keys(), pfamDict)
   filenames = ['genFreq.tab', 'domLigs.tab', 'targLigs.tab']
 
   for filename in filenames:
