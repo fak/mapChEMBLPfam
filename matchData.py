@@ -96,11 +96,7 @@ def pdbePredicted(pdbDict, intacts, molDict, release, mapType):
     try:
       pdbDict[target][code]
     except KeyError:
-      for dummyTarget in pdbDict.keys():
-        if code in pdbDict[dummyTarget]:
-          target = dummyTarget
-          continue
-         
+      continue
     preds = ['%s_%s_%s'%(target, molregno, code)]
     for pos in pdbDict[target][code]['position']:
       pos = int(pos)
