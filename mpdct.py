@@ -10,6 +10,7 @@
 def mpdct( primers, confTargets, threshold, release, user, pword, host, port): 
   import getLigands
   import filterForTarget
+  import pickle
   mpdct = {}
   for primer in primers.keys():
     for target in primers[primer]['targets']:
