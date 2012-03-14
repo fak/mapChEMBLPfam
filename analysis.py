@@ -64,11 +64,11 @@ def analysis(release, user, pword, host, port):
   #### Generate Plots.
   ####
 
+  ## For each target in PfamDict, calculate the ratio of domain over non-domain regions.
+  pfamDict = getRatioUnstruct.getRatio(pfamDict, humProtCod, release, user, pword, host, port)
+  writeTable.writePfam(pfamDict, release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s plotPfamStat.R' %release) 
 
-  ## Plot the histogram of domain numbers per protein and the boxplot of the ratios
-  ## of structured over unstructured regions.
-  import pfamStat
-  pfamStat.pfamStat(chemblTargets, humChembl, humProtCod, pfamDict, release, user, pword, host, port)
 
   ## Assess small molecule binding within Pfam domains for PDBe entries.
   import plot
