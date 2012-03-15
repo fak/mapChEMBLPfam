@@ -23,10 +23,13 @@ def mapPDs(release, user, pword, host, port):
   pfamDict = pickle.load(infile)
   infile.close()    
 
+
   ## Load the pdbDict.
-  infile = open('data/pdbDict_chembl13.pkl','r')
+  import pickle
+  infile = open('data/pdbDict_chembl%s.pkl' %release, 'r')
   pdbDict = pickle.load(infile)
   infile.close()
+  
 
   ###    ###    ###     ###  
   ###    ###    ###     ###
