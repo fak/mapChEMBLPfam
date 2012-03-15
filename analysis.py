@@ -7,8 +7,6 @@ Carries out the analysis of the data generated in the previous steps.
   Felix Kruger
   momo.sander@googlemail.com
 """  
-
-
 def analysis(release, user, pword, host, port):
 
   ####
@@ -28,13 +26,13 @@ def analysis(release, user, pword, host, port):
   import parse
   humProtCod = parse.parse2col('data/proteinCoding.tab', True, 1, 0)
   #humanTargets = humanProtCodUniq.keys()
-  print "We are dealing with %s human proteins" %len(humanTargets)
+  print "We are dealing with %s human proteins" %len(humProtCod.keys())
 
   ## Get a list of all human (!) ChEMBL targets
   humChembl = {}
   for target in chemblTargets:
     if target in humProtCod.keys():
-      humChemblTargets[target] = 0
+      humChembl[target] = 0
 
   ## Load the pfamDict.
   import pickle
@@ -48,7 +46,7 @@ def analysis(release, user, pword, host, port):
   pdbDict = pickle.load(infile)
   infile.close()
 
-  ## Get binding sites for each target.
+  ## Load the uniprotDict.
   import pickle
   infile  = open('data/bsDictUniprot_chembl%s.pkl'%release, 'r')
   uniprotDict = pickle.load(infile)
@@ -65,26 +63,28 @@ def analysis(release, user, pword, host, port):
   ####
 
   ## For each target in PfamDict, calculate the ratio of domain over non-domain regions.
+  import getRatioUnstruct
+  import writeTable
+  import os
   pfamDict = getRatioUnstruct.getRatio(pfamDict, humProtCod, release, user, pword, host, port)
-  writeTable.writePfam(pfamDict, release)
+  writeTable.writePfam(pfamDict, humProtCod,humChembl, chemblTargets, release)
   os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s plotPfamStat.R' %release) 
 
 
   ## Assess small molecule binding within Pfam domains for PDBe entries.
-  import plot
   import matchData
   import evaluatePred 
   pdbDict = matchData.pdbe(pdbDict,pfamDict, release)
-  counts = evaluatePred.pdbe(pdbDict,  release)
-  plot.plotEmpCDF(counts, 'pdb_chembl%s' %release)
+  evaluatePred.pdbe(pdbDict, 'within', release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s  -%s -%s  ecdf.R' % ('within', "PDB" , release))
+
   
   ## Assess small molecule binding within Pfam domains for Uniprot entries.  
-  import plot
   import matchData
   import evaluatePred  
-  uniProtDict = matchData.uniprot(uniprotDict,pfamDict,  release)
-  counts  = evaluatePred.uniprot(uniprotDict, release)
-  plot.plotEmpCDF(counts, 'uniprot_chembl%s' %release) 
+  uniprotDict = matchData.uniprot(uniprotDict,pfamDict,  release)
+  evaluatePred.uniprot(uniprotDict, 'within', release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s -%s -%s  ecdf.R' % ('within', "Uni" , release))
 
   ## Make a barplot of the group sizes for single, multi-one-valid, multi-no-valid,
   ## multi-multi-valid.  
@@ -103,18 +103,17 @@ def analysis(release, user, pword, host, port):
   import matchData
   import evaluatePred
   import os
-  mapTypes = ['single', 'multi', 'conflict']
-  predLs = {}
-  for mapType in mapTypes:
-    intacts = queryDevice.queryDevice("SELECT mpf.protein_accession,mpf.domain,mpf.molregno,  pfd.start, pfd.end FROM map_pfam mpf JOIN pfam_domains pfd ON pfd.protein_accession = mpf.protein_accession WHERE mpf.maptype = '%s' AND mpf.domain = pfd.domain"% mapType, release, user, pword, host, port)
-    predList = matchData.pdbePredicted(pdbDict,  intacts, molDict, release, mapType)
-    predLs[mapType] = predList
 
-  specStr = evaluatePred.prepPlot(predLs, mapTypes )
-  print specStr
-  os.system("R CMD BATCH --vanilla -%s -%s -%s stackBarPlot.R"%(specStr, 'validationBarplot.pdf',3))
-  import sys
-  sys.exit()
+  intacts = queryDevice.queryDevice("SELECT mpf.protein_accession,mpf.domain,mpf.molregno, pfd.start, pfd.end, mpf.maptype FROM map_pfam mpf JOIN pfam_domains pfd ON pfd.protein_accession = mpf.protein_accession WHERE mpf.domain = pfd.domain", release, user, pword, host, port)
+
+  # ...against PDBe  
+  pdbDict = matchData.pdbePredicted(pdbDict,  intacts, molDict)
+  evaluatePred.pdbe(pdbDict, 'prediction', release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s -%s -%s  ecdf.R' % ('prediction', 'PDB' , release))
+  # ...against uniprot
+  uniprotDict = matchData.uniprotPredicted(uniprotDict,  intacts)
+  evaluatePred.uniprot(uniprotDict, 'prediction', release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s  -%s -%s  ecdf.R' % ('prediction', "Uni" , release))
 
   ## Power Law Distribution of domain occurences
   ##  Prepare the data for the power law plot.
