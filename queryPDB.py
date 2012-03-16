@@ -5,7 +5,7 @@
   
   momo.sander@ebi.ac.uk
 """                        
-def queryPDB(molDict, intactDict, release):
+def queryPDB(molDict, intactDict, coordMap, release):
 
   import urllib
   import urllib2
@@ -18,48 +18,56 @@ def queryPDB(molDict, intactDict, release):
    
   for target in intactDict.keys():
     pdbDict[target] = {}
-    for molregno in intactDict[target]:
+    for chembl_id in intactDict[target]:
       try:
-        cmpdId = molDict[molregno]
+        cmpdIds = uniDict[molregno]
       except KeyError:
-        continue             
-      XML = """requestXML=\
-        <!DOCTYPE query SYSTEM "http://www.ebi.ac.uk/pdbe-site/pdbemotif/query.dtd">\
-        <query> \
-        <declaration>  \
-        <uniprot name="p">%s</uniprot> \
-        <ligand name="l1">%s</ligand><aminoacid name="a1">X</aminoacid> \
-        </declaration>\
-        <bond name="b1" a="l1" b="a1" /> \
-        </query>"""% (target, cmpdId)  
-      req = urllib2.Request(url, XML)                                   
-      response = urllib2.urlopen(req)
-      dom = parse(response)
-      for entry in dom.childNodes:
-        if entry.nodeName == "hits":
-          for hit in entry.childNodes:
-            if hit.nodeName == 'hit':
-              pdb = hit.getAttribute('pdb-code')
-              print pdb, cmpdId 
-              for nodeX in hit.childNodes:
-                if nodeX.nodeName == 'bond':
-                  bondType = nodeX.getAttribute('bond-type') 
-                if nodeX.nodeName == 'residue': 
-                  if nodeX.getAttribute('name') == "a1":
-                    pos = nodeX.getAttribute('sequence-number')
-              try:
-                pdbDict[target][cmpdId]['bond'].append(bondType)
-                pdbDict[target][cmpdId]['position'].append(pos) 
-                pdbDict[target][cmpdId]['pdb'].append(pdb)
-              except KeyError:
-                pdbDict[target][cmpdId] = {}
-                pdbDict[target][cmpdId]['bond'] = []
-                pdbDict[target][cmpdId]['position'] = []
-                pdbDict[target][cmpdId]['pdb'] = []
-                pdbDict[target][cmpdId]['bond'].append(bondType)
-                pdbDict[target][cmpdId]['position'].append(pos) 
-                pdbDict[target][cmpdId]['pdb'].append(pdb)                
-      dom.unlink()      
+        continue     
+      for cmpdId in cmpdIds:        
+        XML = """requestXML=\
+          <!DOCTYPE query SYSTEM "http://www.ebi.ac.uk/pdbe-site/pdbemotif/query.dtd">\
+          <query> \
+          <declaration>  \
+          <uniprot name="p">%s</uniprot> \
+          <ligand name="l1">%s</ligand><aminoacid name="a1">X</aminoacid> \
+          </declaration>\
+          <bond name="b1" a="l1" b="a1" /> \
+          </query>"""% (target, cmpdId)  
+        req = urllib2.Request(url, XML)                                   
+        response = urllib2.urlopen(req)
+        dom = parse(response)
+        for entry in dom.childNodes:
+          if entry.nodeName == "hits":
+            for hit in entry.childNodes:
+              if hit.nodeName == 'hit':
+                pdb = hit.getAttribute('pdb-code')
+                print pdb, cmpdId 
+                for nodeX in hit.childNodes:
+                  if nodeX.nodeName == 'bond':
+                    bondType = nodeX.getAttribute('bond-type') 
+                  if nodeX.nodeName == 'residue': 
+                    if nodeX.getAttribute('name') == "a1":
+                      pos = nodeX.getAttribute('sequence-number')
+                      chain = nodeX.getAttribute('residue chain')
+
+                offset = coordMap[pdb][chain]
+                pos = pos + offset
+                try:
+                  pdbDict[target][cmpdId]['bond'].append(bondType)
+                  pdbDict[target][cmpdId]['position'].append(pos) 
+                  pdbDict[target][cmpdId]['pdb'].append(pdb)
+                  pdbDict[target][cmpdId]['chain'].append(chain)
+                except KeyError:
+                  pdbDict[target][cmpdId] = {}
+                  pdbDict[target][cmpdId]['bond'] = []
+                  pdbDict[target][cmpdId]['position'] = []
+                  pdbDict[target][cmpdId]['pdb'] = []
+                  pdbDict[target][cmpdId]['chain'] = []
+                  pdbDict[target][cmpdId]['bond'].append(bondType)
+                  pdbDict[target][cmpdId]['position'].append(pos) 
+                  pdbDict[target][cmpdId]['pdb'].append(pdb)
+                  pdbDict[target][cmpdId]['cahin'].append(chain)        
+        dom.unlink()
     if len(pdbDict[target].keys()) ==0:
       del pdbDict[target]
       
