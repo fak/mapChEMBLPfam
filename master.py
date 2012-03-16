@@ -20,10 +20,10 @@ def master(release, user, pword, host, port):
   import analysis
 
   #os.system("R CMD BATCH --vanilla queryBioMaRt.R")
-  #pfamDomains.pfamDomains(release, user, pword, host, port)
+  pfamDomains.pfamDomains(release, user, pword, host, port)
   mapPfamDomains.mapPDs(release, user, pword, host, port)
-  #pdbDict = pdbChembl.query(release, user, pword, host, port)
-  #uniprotDict = uniprotChembl.query(release, user, pword, host, port)
+  pdbDict = pdbChembl.query(release, user, pword, host, port)
+  uniprotDict = uniprotChembl.query(release, user, pword, host, port)
   analysis.analysis(release, user, pword, host, port)
 
 if __name__ == '__main__':
