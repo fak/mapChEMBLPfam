@@ -17,8 +17,8 @@ def findConflicts(pfamDict, winners, chemblTargets):
         domain = str(domain)      
         if domain in winners:
           candidates[domain]=0
-        else:
-          print domain, ' is not a winner'
+        #else:
+         # print domain, ' is not a winner'
     else:
       continue         
     if len(candidates.keys()) > 1:

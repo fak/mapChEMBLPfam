@@ -50,16 +50,16 @@ def mapPDs(release, user, pword, host, port):
   import findConflicts
   conflicts = findConflicts.findConflicts(pfamDict, valid, chemblTargets)
   ## Generate output files for Sam.
-  import toSam
+  #import toSam
   #toSam.toSam(conflicts, threshold, user, pword, host, release, port)
   ## Use input files from Sam to map the conflicts.
-  import fromSam
-  conf = fromSam.fromSam(conflicts, threshold, user, pword, host, release, port)
+  #import fromSam
+  #conf = fromSam.fromSam(conflicts, threshold, user, pword, host, release, port)
 
   ## Insert data for conflicts and multi domain proteins
   import feedPropDict
   propDict = feedPropDict.dictionary(multi, propDict, blacklist, 'multi')
-  propDict = feedPropDict.dictionary(conf, propDict, blacklist,'conflict')
+  #propDict = feedPropDict.dictionary(conf, propDict, blacklist,'conflict')
 
   ## Export the mapping to a mySQL table.
   import export

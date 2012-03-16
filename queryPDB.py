@@ -5,7 +5,7 @@
   
   momo.sander@ebi.ac.uk
 """                        
-def queryPDB(molDict, intactDict, coordMap, release):
+def queryPDB(uniDict, intactDict, coordMap, release):
 
   import urllib
   import urllib2
