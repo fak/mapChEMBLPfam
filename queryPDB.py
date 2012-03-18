@@ -20,7 +20,7 @@ def queryPDB(uniDict, intactDict, coordMap, release):
     pdbDict[target] = {}
     for chembl_id in intactDict[target]:
       try:
-        cmpdIds = uniDict[molregno]
+        cmpdIds = uniDict[chembl_id]
       except KeyError:
         continue     
       for cmpdId in cmpdIds:        
@@ -49,8 +49,10 @@ def queryPDB(uniDict, intactDict, coordMap, release):
                     if nodeX.getAttribute('name') == "a1":
                       pos = nodeX.getAttribute('sequence-number')
                       chain = nodeX.getAttribute('residue chain')
-
-                offset = coordMap[pdb][chain]
+                try:         
+                  offset = coordMap[pdb][chain]
+                except KeyError:
+                  continue
                 pos = pos + offset
                 try:
                   pdbDict[target][cmpdId]['bond'].append(bondType)

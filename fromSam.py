@@ -1,4 +1,4 @@
-         """
+"""
 Function: fromSam
   --------------------
   momo.sander@googlemail.com
