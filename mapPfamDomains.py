@@ -35,7 +35,7 @@ def mapPDs(release, user, pword, host, port):
   blacklist = parse.col2list('data/removeLigands.txt',1, False)  
   propDict = {}
   propDict = feedPropDict.dictionary(single, propDict, blacklist, 'single')
-  propDict = feedPropDict.addLigs(propDict,'manual') 
+  propDict = feedPropDict.addLigs(propDict,'manual', 'data/whiteList.tab') 
   
   ## Extract a list of validated domains.
   valid = propDict.keys() 

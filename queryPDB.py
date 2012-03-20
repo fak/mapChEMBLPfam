@@ -18,6 +18,7 @@ def queryPDB(uniDict, intactDict, coordMap, release):
    
   for target in intactDict.keys():
     pdbDict[target] = {}
+    print target
     for chembl_id in intactDict[target]:
       try:
         cmpdIds = uniDict[chembl_id]
@@ -41,19 +42,20 @@ def queryPDB(uniDict, intactDict, coordMap, release):
             for hit in entry.childNodes:
               if hit.nodeName == 'hit':
                 pdb = hit.getAttribute('pdb-code')
-                print pdb, cmpdId 
+                #print pdb, cmpdId 
                 for nodeX in hit.childNodes:
                   if nodeX.nodeName == 'bond':
                     bondType = nodeX.getAttribute('bond-type') 
                   if nodeX.nodeName == 'residue': 
                     if nodeX.getAttribute('name') == "a1":
                       pos = nodeX.getAttribute('sequence-number')
-                      chain = nodeX.getAttribute('residue chain')
+                      chain = nodeX.getAttribute('chain')
                 try:         
                   offset = coordMap[pdb][chain]
                 except KeyError:
                   continue
-                pos = pos + offset
+                  
+                pos = int(pos) + offset
                 try:
                   pdbDict[target][cmpdId]['bond'].append(bondType)
                   pdbDict[target][cmpdId]['position'].append(pos) 
@@ -68,7 +70,7 @@ def queryPDB(uniDict, intactDict, coordMap, release):
                   pdbDict[target][cmpdId]['bond'].append(bondType)
                   pdbDict[target][cmpdId]['position'].append(pos) 
                   pdbDict[target][cmpdId]['pdb'].append(pdb)
-                  pdbDict[target][cmpdId]['cahin'].append(chain)        
+                  pdbDict[target][cmpdId]['chain'].append(chain)        
         dom.unlink()
     if len(pdbDict[target].keys()) ==0:
       del pdbDict[target]

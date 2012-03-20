@@ -25,7 +25,7 @@ def getRatio(pfamDict,humanTargets, release, user, pword, host, port):
       seq= queryDevice.queryDevice("SELECT protein_sequence FROM target_dictionary WHERE protein_accession = '%s'"%target, release, user, pword, host, port)
       try:
         length = len(seq[0][0])-1
-      except KeyError:
+      except IndexError:
         pfamDict[target]['ratio'] = 'NA'
         continue
 

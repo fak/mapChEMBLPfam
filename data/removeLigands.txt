@@ -1,9 +1,9 @@
-LRRNT	Q99645	all	see evernote entry
-7tm_3	Q80T35	all	See evernote entry
-Ank_2	all	all	See evernote entry
-WD40	Q9Y2T4	all	See evernote entry
-Lig_chan	Q91755	all See evernote entry
-GAF	Q864F1	all	see evernote entry
-SH3_1	A1Z199	all	see evernote entry
-Tubulin_C	Q9MZB0	all	see evernote entry
-Tubulin_C	O46399	all see evernote entry
+LRRNT	Q99645	all	see S3-1
+7tm_3	Q80T35	all	see S3-2
+Ank_2	all	all	see S3-3
+WD40	Q9Y2T4	all	see S3-4
+Lig_chan	Q91755	see S3-5
+GAF	Q864F1	all	see S3-6
+SH3_1	A1Z199	all	see S3-7
+Tubulin_C	Q9MZB0	all	see S3-8
+Tubulin_C	O46399	all see S3-8

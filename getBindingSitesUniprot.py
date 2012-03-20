@@ -34,7 +34,7 @@ def getBindingSites(targets,release):
                         for position in location.childNodes:
                           if position.nodeName == 'position':
                             position = position.getAttribute('position')
-                            print target,'\t',ligand,'\t',position
+                            #print target,'\t',ligand,'\t',position
                             bsDict[target]['ligands'].append(ligand)
                             bsDict[target]['positions'].append(position)
       dom.unlink()

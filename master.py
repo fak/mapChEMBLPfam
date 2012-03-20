@@ -23,7 +23,7 @@ def master(release, user, pword, host, port):
   #pfamDomains.pfamDomains(release, user, pword, host, port)
   #mapPfamDomains.mapPDs(release, user, pword, host, port)
   pdbDict = pdbChembl.query(release, user, pword, host, port)
-  uniprotDict = uniprotChembl.query(release, user, pword, host, port)
+  #uniprotDict = uniprotChembl.query(release, user, pword, host, port)
   analysis.analysis(release, user, pword, host, port)
 
 if __name__ == '__main__':
@@ -40,7 +40,4 @@ if __name__ == '__main__':
   host = sys.argv[4]
   port = int(sys.argv[5])
 
-  master(release, user, pword, host, port)
-  
-  
-  
+  master(release, user, pword, host, port) 

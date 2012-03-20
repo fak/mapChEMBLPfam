@@ -44,10 +44,10 @@ def dictionary(dict_x, propDict, blacklist, maptype):
 
 
 """addLigs"""
-def addLigs(propDict, maptype):
+def addLigs(propDict, maptype, infile):
 
   ### feed addLigs into blueprint propDict
-  infile = open('data/addLigands.txt', 'r')
+  infile = open(infile, 'r')
   lines = infile.readlines()
   infile.close()
   molregno = None
