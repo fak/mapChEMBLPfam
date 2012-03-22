@@ -114,11 +114,11 @@ def analysis(release, user, pword, host, port):
 
   # ...against PDBe  
   pdbDict = matchData.pdbePredicted(pdbDict,  intacts, uniDict)
-  evaluatePred.pdbe(pdbDict, 'prediction', release)
+  evaluatePred.pdbePredicted(pdbDict, 'prediction', release)
   os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s -%s -%s  ecdf.R' % ('prediction', 'PDB' , release))
   # ...against uniprot
   uniprotDict = matchData.uniprotPredicted(uniprotDict,  intacts)
-  evaluatePred.uniprot(uniprotDict, 'prediction', release)
+  evaluatePred.uniprotPredicted(uniprotDict, 'prediction', release)
   os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s  -%s -%s  ecdf.R' % ('prediction', "Uni" , release))
 
 
