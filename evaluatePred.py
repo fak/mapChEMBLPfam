@@ -48,7 +48,7 @@ def pdbePredicted(pdbDict, keyword,   release):
     Fs = 0
     for cmpdId in pdbDict[target].keys():
       try:
-        mapType = pdbDict[target][cmpdId]['mapType']
+        mapType = pdbDict[target][cmpdId]['maptype']
       except KeyError:
         #print 'no predictions made for:', target, cmpdId
         continue        
@@ -113,10 +113,11 @@ def uniprotPredicted(bsDict, keyword,  release):
     Ts = 0
     Fs = 0
     try:
-      mapType = bsDict[target]['mapType']
+      bsDict[target]['prediction']
     except KeyError:
       #print 'no observations made for:', target
-      continue        
+      continue
+    mapType = bsDict[target]['maptype']        
     for pred in bsDict[target][keyword]:
       if pred:
         Ts +=1
