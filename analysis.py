@@ -53,10 +53,16 @@ def analysis(release, user, pword, host, port):
   infile.close()
   print 'number of targets with binding site information', len(uniprotDict.keys())
 
-  ## Generate a mapping of PDBe identifiers and molregnos.
-  import generateMolDict
-  molDict = generateMolDict.generateMolDict(release, user, pword, host, port)
 
+  ## Load the uniDict.
+  import parseUniChem
+  uniDict = parseUniChem.parse('data/unichemMappings.txt')
+
+  ## Load the propDict.
+  import pickle
+  infile = open('data/propDict_%s.pkl'% release, 'r')
+  propDict = pickle.load(infile)
+  infile.close()
 
   ####
   #### Generate Plots.
@@ -104,16 +110,23 @@ def analysis(release, user, pword, host, port):
   import evaluatePred
   import os
 
-  intacts = queryDevice.queryDevice("SELECT mpf.protein_accession,mpf.domain,mpf.molregno, pfd.start, pfd.end, mpf.maptype FROM map_pfam mpf JOIN pfam_domains pfd ON pfd.protein_accession = mpf.protein_accession WHERE mpf.domain = pfd.domain", release, user, pword, host, port)
+  intacts = queryDevice.queryDevice("SELECT mpf.protein_accession,mpf.domain,mpf.molregno, pfd.start, pfd.end, mpf.maptype, md.chembl_id FROM map_pfam mpf JOIN pfam_domains pfd ON pfd.protein_accession = mpf.protein_accession JOIN molecule_dictionary md ON md.molregno = mpf.molregno WHERE mpf.domain = pfd.domain", release, user, pword, host, port)
 
   # ...against PDBe  
-  pdbDict = matchData.pdbePredicted(pdbDict,  intacts, molDict)
+  pdbDict = matchData.pdbePredicted(pdbDict,  intacts, uniDict)
   evaluatePred.pdbe(pdbDict, 'prediction', release)
   os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s -%s -%s  ecdf.R' % ('prediction', 'PDB' , release))
   # ...against uniprot
   uniprotDict = matchData.uniprotPredicted(uniprotDict,  intacts)
   evaluatePred.uniprot(uniprotDict, 'prediction', release)
   os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s  -%s -%s  ecdf.R' % ('prediction', "Uni" , release))
+
+
+  ## Map the overlap
+  import overlap
+  tholds = [50,10,5,1,0.5,0.1,0.05,0.01,0.005,0.001, 0.0005,0.0001, 0.00005,0.000001]
+  overlap.overlap(propDict, tholds, release)  
+
 
   ## Power Law Distribution of domain occurences
   ##  Prepare the data for the power law plot.
@@ -150,8 +163,9 @@ def analysis(release, user, pword, host, port):
   import export
   import os
   selected = ['7tm_1','Pkinase','Pkinase_Tyr','SH2','SNF','Trypsin']
+  export.exportProps(selected, threshold, release, user, pword, host, port) 
+
   filename = 'data/cmpdProps_pKi%s_chembl%s.tab'%(int(threshold), release)
-  export.exportProps(selected, threshold, release, user, pword, host, port)
   os.system("/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s plotDens.R"%filename)
 
  

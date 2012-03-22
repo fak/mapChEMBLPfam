@@ -23,4 +23,4 @@ mainFrame <- as.data.frame(intable)
 
 pp <- ggplot(mainFrame)+geom_step(aes(unique(pPfam), ecdf(pPfam)(unique(pPfam))*length(pPfam)))
 
-ggsave(pp, file = sprintf('data/%s_%s_%s.pdf',key,  release, filename))
+ggsave(pp, file = sprintf('visual/%s_%s_%s.pdf',key,  release, filename))

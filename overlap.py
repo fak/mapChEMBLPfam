@@ -5,15 +5,10 @@
   ### thresholds. 
   momo.sander@googlemail.com
 """ 
-def overlap():
+def overlap(propDict, tholds, release):
   import numpy as np
   import pickle
 
-  infile = open('data/propDict_13.pkl', 'r')
-  propDict = pickle.load(infile)
-  infile.close()
-
-  tholds = [50,10,5,1,0.5,0.1,0.05,0.01,0.005,0.001, 0.0005,0.0001, 0.00005,0.000001]
   xholds = []
   for thold in tholds:
     xhold =  -np.log10(thold*10**(-6))
@@ -56,12 +51,17 @@ def overlap():
             else:
               break
               
+  out = open('data/overlapTrace_%s'% release, 'w')
+  pickle.dump(trace, out)
+  out.close()
+
   for xhold in xholds:
-    nw = open('data/connectivity_%s_%s.tab' %( xhold, release),'w')
+    nw = open('data/connectivity_%.1f_%s.tab' %( xhold, release),'w')
     for domain1 in trace.keys():
-      for domain2 in trace[domain1].keys:
+      print domain1
+      for domain2 in trace[domain1].keys():
         try: 
-          stren = len(traceback_50[domain1][domain2][xhold])
+          stren = len(trace[domain1][domain2][xhold])
         except KeyError:
           continue
 

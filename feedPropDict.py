@@ -57,7 +57,8 @@ def addLigs(propDict, maptype, infile):
     target = elements[1]
     smiles = elements[2]
     aff = elements[3]
-    docId = 'manual'      
+    docId = 'manual'
+    print 'whitelisting:', domain       
     try:
       propDict[domain].append([molregno, smiles, target, aff, docId, maptype])
       print 'adding %s to %s' %(smiles, domain)

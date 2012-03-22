@@ -23,6 +23,7 @@ def mapPDs(release, user, pword, host, port):
   pfamDict = pickle.load(inFile)
   inFile.close()    
 
+
   ## Get ligands for targets with single domains.
   import singleDomain 
   single = singleDomain.singleDomains(pfamDict, chemblTargets, threshold, release, user, pword, host, port)

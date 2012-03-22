@@ -37,7 +37,6 @@ def exportConflsMySQL(conflicts, release, user, pword, host, port):
   out = open('data/conflicts.txt', 'w')
   for conflict in conflicts:
     for target in conflicts[conflict]:
-      print target
       out.write('%s\t%s\n'%(target, conflict))
   out.close()
                                                                                

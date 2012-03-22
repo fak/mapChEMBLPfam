@@ -80,7 +80,7 @@ def pdbe(pdbDict,pfamDict, release):
 """  
 
  
-def pdbePredicted(pdbDict, intacts, molDict):
+def pdbePredicted(pdbDict, intacts, uniDict):
    
   for intact in intacts:
     target = intact[0]
@@ -88,8 +88,9 @@ def pdbePredicted(pdbDict, intacts, molDict):
     end = intact[4]
     mapType = intact[5]
     molregno = intact[2]
+    chemblId = intact[6]
     try:
-      code = molDict[molregno]
+      code = uniDict[chemblId][0]
     except KeyError:  
       continue
     try:
