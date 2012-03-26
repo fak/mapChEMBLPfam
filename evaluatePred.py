@@ -40,7 +40,7 @@ def pdbePredicted(pdbDict, keyword,   release):
 
   import numpy as np
   out = open('data/%s_PDB_%s.tab'% (keyword, release) , 'w')
-  out.write('target\tcmpd\tpPfam\n')
+  out.write('target\tcmpd\tpPfam\tmapType\n')
   #humanTargets = humanProtCodUniq.keys()
   
   for target in pdbDict.keys():
@@ -108,7 +108,7 @@ def uniprot(bsDict, keyword,  release):
 def uniprotPredicted(bsDict, keyword,  release): 
   import numpy as np
   out = open('data/%s_Uni_%s.tab'% (keyword, release), 'w')
-  out.write('target\tpPfam\n')
+  out.write('target\tpPfam\tmapType\n')
   for target in bsDict.keys():
     Ts = 0
     Fs = 0

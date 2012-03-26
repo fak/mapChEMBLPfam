@@ -31,8 +31,7 @@ pp <- ggplot(mainFrame)+
   geom_boxplot(aes(x=source, y = pPfam, fill = source))+
   scale_y_continuous(limits = c(0,1))
   
-ggsave(pp, file= sprintf('visual/boxplot_%s.pdf', release))
-
+ggsave(pp, file= sprintf('visual/boxplot_%s.pdf', release), useDingbats = F)
 pp <- ggplot(mainFrame)+
   geom_density(aes(y=..density.., x = pPfam, col = source))+
   scale_x_continuous(limits = c(0,1))

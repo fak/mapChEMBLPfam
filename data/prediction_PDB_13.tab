@@ -1,4 +1,4 @@
-target	cmpd	pPfam
+target	cmpd	pPfam	mapType
 P31749	CQU	0.765957446809	multi
 Q6B856	VLB	0.146341463415	multi
 A9JQL9	830	1.0	single

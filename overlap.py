@@ -51,7 +51,7 @@ def overlap(propDict, tholds, release):
             else:
               break
               
-  out = open('data/overlapTrace_%s'% release, 'w')
+  out = open('data/overlapTrace_%s.pkl'% release, 'w')
   pickle.dump(trace, out)
   out.close()
 

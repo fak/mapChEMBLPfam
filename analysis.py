@@ -162,7 +162,7 @@ def analysis(release, user, pword, host, port):
   ## Plot the ligand properties.
   import export
   import os
-  selected = ['7tm_1','Pkinase','Pkinase_Tyr','SH2','SNF','Trypsin']
+  selected = ['7tm_1','Pkinase','Pkinase_Tyr','p450','SNF','Trypsin']
   export.exportProps(selected, threshold, release, user, pword, host, port) 
 
   filename = 'data/cmpdProps_pKi%s_chembl%s.tab'%(int(threshold), release)

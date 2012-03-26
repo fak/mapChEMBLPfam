@@ -7,7 +7,7 @@ def writePfam(pfamDict,humProtCod, humChembl, chemblTargets, release):
 
   out = open('data/pfamTable_%s.tab' % release,'w')
   out.write('target\tnDomains\tpPfam\tsource\n')
-  for i,source in enumerate([chemblTargets, humProtCod.keys(), humChembl.keys()]):
+  for i,source in enumerate([chemblTargets, humChembl.keys(),  humProtCod.keys()]):
     for target in source:
       if target not in pfamDict.keys():
         continue
