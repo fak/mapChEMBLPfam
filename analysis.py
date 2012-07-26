@@ -162,10 +162,10 @@ def analysis(release, user, pword, host, port):
   ## Plot the ligand properties.
   import export
   import os
-  selected = ['7tm_1','Pkinase','Pkinase_Tyr','p450','SNF','Trypsin']
-  export.exportProps(selected, threshold, release, user, pword, host, port) 
+  selected = ['Pkinase','Pkinase_Tyr','p450','SNF','Trypsin', 'RVP']
+  export.exportProps(selected,propDict, threshold, release, user, pword, host, port) 
 
   filename = 'data/cmpdProps_pKi%s_chembl%s.tab'%(int(threshold), release)
-  os.system("/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s plotDens.R"%filename)
+  os.system("/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s pca.R"%filename)
 
  

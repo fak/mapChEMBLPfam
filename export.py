@@ -85,18 +85,25 @@ def exportPfamDict(targets,pfamDict, release, user, pword, host, port):
   
   momo.sander@ebi.ac.uk
 """                                       
-def exportProps(selected, threshold, release, user, pword, host, port): 
+def exportProps(selected, propDict, threshold, release, user, pword, host, port): 
 
   import os  
   import queryDevice
   ### Write output to a table.
   out = open('data/cmpdPropssed.tab', 'w')
-  out.write('domain\tmolregno\tmolweight\tlogP\tHBA\tHBD\tPSA\tMAPTYPE\n')
+  out.write('domain\tmolregno\tmolweight\tlogP\tHBA\tHBD\tPSA\trtb\tacd_most_apka\tacd_most_bpka\n')
   for domain in selected:
-    data = queryDevice.queryDevice("SELECT act.molregno, mw_freebase, acd_logp, HBA, HBD, PSA, mpf.mapType FROM compound_properties cp JOIN molecule_dictionary md ON cp.molregno = md.molregno JOIN activities act ON md.molregno = act.molregno JOIN map_pfam mpf ON act.activity_id =mpf.activity_id WHERE mpf.domain ='%s' AND molecule_type = 'Small molecule'"%domain, release, user, pword, host, port) 
-    for tup in data:
-      out.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(domain, tup[0], tup[1], tup[2], tup[3], tup[4], tup[5], tup[6]))
-      
+    lkp = {}
+    for mol in propDict[domain]:
+      molregno = mol[0]
+      lkp[molregno] = 0
+    for molregno in lkp.keys():
+      tup = queryDevice.queryDevice("SELECT DISTINCT cp.molregno, mw_freebase, alogp, HBA, HBD, PSA, RTB, ACD_MOST_APKA, ACD_MOST_BPKA FROM compound_properties cp JOIN molecule_dictionary md ON cp.molregno = md.molregno WHERE cp.molregno ='%s' AND md.molecule_type = 'Small molecule'"% molregno, release, user, pword, host, port)
+      try:
+        tup = tup[0]
+        out.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(domain, tup[0], tup[1], tup[2], tup[3], tup[4], tup[5], tup[6], tup[7],tup[8]))
+      except IndexError:
+        pass
   out.close()
 
   os.system("sed \"s/None/NA/g\" data/cmpdPropssed.tab > \

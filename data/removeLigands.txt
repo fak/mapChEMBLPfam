@@ -1,9 +1,5 @@
-LRRNT	Q99645	all	see S3-1
-7tm_3	Q80T35	all	see S3-2
-Ank_2	all	all	see S3-3
-WD40	Q9Y2T4	all	see S3-4
-Lig_chan	Q91755	see S3-5
-GAF	Q864F1	all	see S3-6
-SH3_1	A1Z199	all	see S3-7
-Tubulin_C	Q9MZB0	all	see S3-8
-Tubulin_C	O46399	all see S3-8
+7tm_3	Q80T35	all	see additional file 7 
+Lig_chan	Q91755	see additional file 7 
+GAF	Q864F1	all	see additional file 7 
+SH3_1	A1Z199	all	see additional file 7
+Tubulin_C	O46399	all	see additional file 7 
