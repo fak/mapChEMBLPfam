@@ -3,7 +3,7 @@
   --------------------
   Parse the sift mapping and creates a dictionary with the coordinate mappings.
   
-  momo.sander@ebi.ac.uk
+  momo.sander@googlemail.com
 """
 
 def coordMap():

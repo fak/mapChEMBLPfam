@@ -1,9 +1,9 @@
 """
-  Function:  query
+  Function:  pdbChembl
   --------------------
   Retrieves all binding site residues for interactions in ChEMBL.
   
-  momo.sander@ebi.ac.uk
+  fkrueger@ebi.ac.uk
 """                                       
                                      
 def query(release, user, pword, host, port): 

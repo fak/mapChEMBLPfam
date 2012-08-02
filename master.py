@@ -5,7 +5,7 @@ Goes through all necessary steps.
   --------------------
   Author:
   Felix Kruger
-  momo.sander@googlemail.com
+  fkrueger@ebi.ac.uk
 """  
 
 def master(release, user, pword, host, port): 
@@ -21,7 +21,7 @@ def master(release, user, pword, host, port):
 
   os.system("R CMD BATCH --vanilla queryBioMaRt.R")
   pfamDomains.pfamDomains(release, user, pword, host, port)
-  mapPfamDomains.mapPDs(release, user, pword, host, port)
+  mapPfamDomains.mapPDs(th, release, user, pword, host, port)
   pdbDict = pdbChembl.query(release, user, pword, host, port)
   uniprotDict = uniprotChembl.query(release, user, pword, host, port)
   analysis.analysis(release, user, pword, host, port)

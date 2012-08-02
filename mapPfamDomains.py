@@ -7,11 +7,11 @@
   Felix Kruger
   momo.sander@googlemail.com
 """                              
-def mapPDs(release, user, pword, host, port): 
+def mapPDs(th, release, user, pword, host, port): 
 
   ## Set the threshold.
   import numpy as np
-  threshold = -np.log10(50*10**(-6))
+  threshold = -np.log10(th*10**(-6))
   
   ## Get a list of all ChEMBL targets.
   import getUniprotTargets
@@ -49,10 +49,9 @@ def mapPDs(release, user, pword, host, port):
   import findConflicts
   conflicts = findConflicts.findConflicts(pfamDict, valid, chemblTargets)
 
-  ## Insert data for conflicts and multi domain proteins
+  ## Insert data for multi domain proteins.
   import feedPropDict
   propDict = feedPropDict.dictionary(multi, propDict, blacklist, 'multi')
-  #propDict = feedPropDict.dictionary(conf, propDict, blacklist,'conflict')
 
   ## Export the mapping to a mySQL table.
   import export

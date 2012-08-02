@@ -151,14 +151,6 @@ def analysis(release, user, pword, host, port):
     plplotRaw.plplotRaw(freqs, filename) 
 
 
-  ## Make scatterplot of rank ordered gene counts vs. ligand counts.  
-  import prepRank
-  import plot
-
-  (genRankL, ligRankL, rectBords) = prepRank.prepRank()
-  plot.rankPlot(genRankL, ligRankL, rectBords)   
-
-
   ## Plot the ligand properties.
   import export
   import os

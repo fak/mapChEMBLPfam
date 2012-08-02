@@ -3,7 +3,7 @@
   --------------------
   Count the targets and compounds per domain using the propDict.
   
-  momo.sander@ebi.ac.uk
+  momo.sander@googlemail.com
 """                              
 def countLigs(humanTargets, chemblTargets, release, user, pword, host, port):
   import queryDevice

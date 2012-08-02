@@ -3,7 +3,7 @@
   --------------------
   carries out validation of the algorithm against PDBe.
   
-  momo.sander@ebi.ac.uk
+  momo.sander@googlemail.com
 """                                       
 def pdbe(pdbDict, keyword,   release): 
                            
@@ -70,7 +70,7 @@ def pdbePredicted(pdbDict, keyword,   release):
   --------------------
   Carries out validation of the algorithm against Uniprot.
   
-  momo.sander@ebi.ac.uk
+  momo.sander@googlemail.com
 """   
 def uniprot(bsDict, keyword,  release): 
   import numpy as np
@@ -103,7 +103,7 @@ def uniprot(bsDict, keyword,  release):
   --------------------
   Carries out validation of the algorithm against Uniprot.
   
-  momo.sander@ebi.ac.uk
+  momo.sander@googlemail.com
 """   
 def uniprotPredicted(bsDict, keyword,  release): 
   import numpy as np

@@ -5,7 +5,7 @@
   uses a ChEMBL query to make a dictionary of all interaction of PDB ligands 
   with ChEMBL targets.
   
-  momo.sander@ebi.ac.uk
+  momo.sander@googlemail.com
 """
 
 def getIntacts(uniDict , release, user, pword, host, port):

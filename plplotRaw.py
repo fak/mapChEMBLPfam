@@ -3,7 +3,7 @@
   --------------------
   Plot the power-law function, take raw (not cumulative) occurences.
   
-  momo.sander@ebi.ac.uk
+  momo.sander@googlemail.com
 """     
 
 import matplotlib.pyplot as plt
