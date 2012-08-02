@@ -28,15 +28,13 @@ def mapPDs(release, user, pword, host, port):
   import singleDomain 
   single = singleDomain.singleDomains(pfamDict, chemblTargets, threshold, release, user, pword, host, port)
 
-  ## Construct the propDict for targets with one domain and manually 
-  ## insert/delete ligands. From this, we also derive the list of winners, ie. 
-  ## domains binding ligands with at least micromolar affinity. 
+  ## Construct the propDict for targets with one domain. Manually remove targets (as decribed in Methods section Manual curation) listed in blacklist.tab and add domains that never occur alone listed in whitelist (Pkinase_Tyr). 
   import feedPropDict
   import parse
-  blacklist = parse.col2list('data/removeLigands.txt',1, False)  
+  blacklist = parse.col2list('data/blacklist.tab',1, False)  
   propDict = {}
   propDict = feedPropDict.dictionary(single, propDict, blacklist, 'single')
-  propDict = feedPropDict.addLigs(propDict,'manual', 'data/whiteList.tab') 
+  propDict = feedPropDict.addLigs(propDict,'manual', 'data/whitelist.tab') 
   
   ## Extract a list of validated domains.
   valid = propDict.keys() 
@@ -46,16 +44,10 @@ def mapPDs(release, user, pword, host, port):
   import multiDomain
   multi = multiDomain.multiDomain(pfamDict, chemblTargets, valid, threshold, release, user, pword, host, port)
 
-  ## Deal with targets that have more than one binding site containing 
-  ## domain. Interface with Sam's text mining process.
+  ## Identify targets that have more than one binding site containing 
+  ## domain. 
   import findConflicts
   conflicts = findConflicts.findConflicts(pfamDict, valid, chemblTargets)
-  ## Generate output files for Sam.
-  #import toSam
-  #toSam.toSam(conflicts, threshold, user, pword, host, release, port)
-  ## Use input files from Sam to map the conflicts.
-  #import fromSam
-  #conf = fromSam.fromSam(conflicts, threshold, user, pword, host, release, port)
 
   ## Insert data for conflicts and multi domain proteins
   import feedPropDict
