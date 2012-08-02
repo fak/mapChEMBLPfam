@@ -1,6 +1,5 @@
-      
 """
-  Function:  parseUniChem
+Function:  parseUniChem
   --------------------
   Carry out the mapping and save results.
 
@@ -28,6 +27,4 @@ def parse(infile):
         uniDict[chembl] = []
         uniDict[chembl].append(pdb)
   
-  return uniDict      
-  
-                       
+  return uniDict   

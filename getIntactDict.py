@@ -1,12 +1,12 @@
 """
-  Function:  makeIntactDictAllPDBs
+  Function:  getIntactDict
   --------------------
   uses a ChEMBL query to make a dictionary of all interaction of PDB ligands 
   with ChEMBL targets.
   
-  momo.sander@ebi.ac.uk
-"""         
-    
+  momo.sander@googlemail.com
+"""
+
 def getIntacts(uniDict , release, user, pword, host, port):
 
   import pickle
@@ -36,4 +36,3 @@ def getIntacts(uniDict , release, user, pword, host, port):
       intactDict[target][chembl_id] = {}
           
   return intactDict
-

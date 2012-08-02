@@ -16,7 +16,7 @@ def uniprot(bsDict, pfamDict, release):
       #print 'No prediction for %s'%target
       del bsDict[target]
       continue
-    bsDict[target]['prediction'] = []
+    bsDict[target]['within'] = []
     for pos in bsDict[target]['positions']:
       i = 0
       pred = False
@@ -31,7 +31,7 @@ def uniprot(bsDict, pfamDict, release):
           pred = True
 
   
-      bsDict[target]['prediction'].append(pred)
+      bsDict[target]['within'].append(pred)
       
   return bsDict
 
@@ -64,10 +64,10 @@ def pdbe(pdbDict,pfamDict, release):
           if pos >= start  and pos <= end :
             pred = True
         try:
-          pdbDict[target][cmpdId]['prediction'].append(pred)
+          pdbDict[target][cmpdId]['within'].append(pred)
         except KeyError:
-          pdbDict[target][cmpdId]['prediction'] = []
-          pdbDict[target][cmpdId]['prediction'].append(pred)
+          pdbDict[target][cmpdId]['within'] = []
+          pdbDict[target][cmpdId]['within'].append(pred)
 
   return pdbDict
 
@@ -80,39 +80,81 @@ def pdbe(pdbDict,pfamDict, release):
 """  
 
  
-def pdbePredicted(pdbDict, intacts, molDict, release, mapType):
-  import queryDevice
-
-  predList = [] 
+def pdbePredicted(pdbDict, intacts, uniDict):
+   
   for intact in intacts:
     target = intact[0]
     start = intact[3]
     end = intact[4]
+    mapType = intact[5]
     molregno = intact[2]
+    chemblId = intact[6]
     try:
-      code = molDict[molregno]
+      code = uniDict[chemblId][0]
     except KeyError:  
       continue
     try:
       pdbDict[target][code]
     except KeyError:
       continue
-      #for dummyTarget in pdbDict.keys():
-       # if code in pdbDict[dummyTarget].keys():
-        #  target = dummyTarget
-        #  continue
-         
-    preds = ['%s_%s_%s'%(target, molregno, code)]
+
+    pdbDict[target][code]['maptype'] = mapType
     for pos in pdbDict[target][code]['position']:
       pos = int(pos)
       i = 0
       pred = False
-      #print 'Interacting residue, start, end:', pos, start, end, '\n' 
       if pos >= start  and pos <= end :
         pred = True
-      preds.append(pred)
-    predList.append(preds)
+      try:
+        pdbDict[target][code]['prediction'].append(pred)
+      except KeyError:
+        pdbDict[target][code]['prediction'] = []
+        pdbDict[target][code]['prediction'].append(pred)
+    
 
-  return predList  
+  return pdbDict 
+
+
+
+"""
+  Function:  uniprotPredicted
+  --------------------
+  Check if positions are within the predicted domain. 
+  
+  momo.sander@ebi.ac.uk
+"""
+
+
+def uniprotPredicted(bsDict, intacts):
+
+  for intact in intacts:
+    target = intact[0]
+    start = intact[3]
+    end = intact[4]
+    mapType = intact[5]
+    
+    try:
+      bsDict[target]
+    except KeyError:
+      continue
+
+    bsDict[target]['maptype'] = mapType
+    for pos in bsDict[target]['positions']:
+      pos = int(pos)
+      i = 0
+      pred = False
+      if pos >= start  and pos <= end :
+        pred = True
+      try:
+        bsDict[target]['prediction'].append(pred)
+      except KeyError:
+        bsDict[target]['prediction'] = []
+        bsDict[target]['prediction'].append(pred)
+
+
+  return bsDict
+
+
+
 
 

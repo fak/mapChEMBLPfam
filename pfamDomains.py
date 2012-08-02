@@ -19,9 +19,11 @@ def pfamDomains(release, user, pword, host, port):
   ## Get all ChEMBL targets with a Uniprot accession.
   chemblTargets = getUniprotTargets.getUniprotTargets(release, user, pword, host, port)
   
-  ## Read all human protein coding genes
-  humanProtCodUniq = parse.parse2col('data/proteinCoding.tab', True, 1, 0)
-  humanTargets = humanProtCodUniq.keys()
+  ## Read all human protein coding gene names.
+  humProtCod = parse.parse2col('data/proteinCoding.tab', True, 1, 0)
+  humanTargets = []
+  for tstr in humProtCod.keys():
+    humanTargets.append(tstr.split(';')[0])
   print "We are dealing with %s human proteins" %len(humanTargets)
   
   ## Generate a list of all targets that are to be fed into the getPfamDomain procedure.

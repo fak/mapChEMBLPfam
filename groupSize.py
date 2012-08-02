@@ -3,7 +3,7 @@
   --------------------
   calculates the group sizes for each mapping case 
   
-  momo.sander@ebi.ac.uk
+  momo.sander@googlemail.com
 """                              
 def groupSize(chemblTargets, pfamDict): 
 

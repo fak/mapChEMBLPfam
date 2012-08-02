@@ -7,8 +7,6 @@ Carries out the analysis of the data generated in the previous steps.
   Felix Kruger
   momo.sander@googlemail.com
 """  
-
-
 def analysis(release, user, pword, host, port):
 
   ####
@@ -26,9 +24,15 @@ def analysis(release, user, pword, host, port):
   
   ## Read all human protein coding genes
   import parse
-  humanProtCodUniq = parse.parse2col('data/proteinCoding.tab', True, 1, 0)
-  humanTargets = humanProtCodUniq.keys()
-  print "We are dealing with %s human proteins" %len(humanTargets)
+  humProtCod = parse.parse2col('data/proteinCoding.tab', True, 1, 0)
+  #humanTargets = humanProtCodUniq.keys()
+  print "We are dealing with %s human proteins" %len(humProtCod.keys())
+
+  ## Get a list of all human (!) ChEMBL targets
+  humChembl = {}
+  for target in chemblTargets:
+    if target in humProtCod.keys():
+      humChembl[target] = 0
 
   ## Load the pfamDict.
   import pickle
@@ -42,43 +46,51 @@ def analysis(release, user, pword, host, port):
   pdbDict = pickle.load(infile)
   infile.close()
 
-  ## Get binding sites for each target.
+  ## Load the uniprotDict.
   import pickle
   infile  = open('data/bsDictUniprot_chembl%s.pkl'%release, 'r')
   uniprotDict = pickle.load(infile)
   infile.close()
   print 'number of targets with binding site information', len(uniprotDict.keys())
 
-  ## Generate a mapping of PDBe identifiers and molregnos.
-  import generateMolDict
-  molDict = generateMolDict.generateMolDict(release, user, pword, host, port)
 
+  ## Load the uniDict.
+  import parseUniChem
+  uniDict = parseUniChem.parse('data/unichemMappings.txt')
+
+  ## Load the propDict.
+  import pickle
+  infile = open('data/propDict_%s.pkl'% release, 'r')
+  propDict = pickle.load(infile)
+  infile.close()
 
   ####
   #### Generate Plots.
   ####
 
+  ## For each target in PfamDict, calculate the ratio of domain over non-domain regions.
+  import getRatioUnstruct
+  import writeTable
+  import os
+  pfamDict = getRatioUnstruct.getRatio(pfamDict, humProtCod, release, user, pword, host, port)
+  writeTable.writePfam(pfamDict, humProtCod,humChembl, chemblTargets, release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s plotPfamStat.R' %release) 
 
-  ## Plot the histogram of domain numbers per protein and the boxplot of the ratios
-  ## of structured over unstructured regions.
-  import pfamStat
-  pfamStat.pfamStat(chemblTargets, humanProtCodUniq, pfamDict, release, user, pword, host, port)
 
   ## Assess small molecule binding within Pfam domains for PDBe entries.
-  import plot
   import matchData
   import evaluatePred 
   pdbDict = matchData.pdbe(pdbDict,pfamDict, release)
-  counts = evaluatePred.pdbe(pdbDict,  release)
-  plot.plotEmpCDF(counts, 'pdb_chembl%s' %release)
+  evaluatePred.pdbe(pdbDict, 'within', release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s  -%s -%s  ecdf.R' % ('within', "PDB" , release))
+
   
   ## Assess small molecule binding within Pfam domains for Uniprot entries.  
-  import plot
   import matchData
   import evaluatePred  
-  uniProtDict = matchData.uniprot(uniprotDict,pfamDict,  release)
-  counts  = evaluatePred.uniprot(uniprotDict, release)
-  plot.plotEmpCDF(counts, 'uniprot_chembl%s' %release) 
+  uniprotDict = matchData.uniprot(uniprotDict,pfamDict,  release)
+  evaluatePred.uniprot(uniprotDict, 'within', release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s -%s -%s  ecdf.R' % ('within', "Uni" , release))
 
   ## Make a barplot of the group sizes for single, multi-one-valid, multi-no-valid,
   ## multi-multi-valid.  
@@ -97,18 +109,24 @@ def analysis(release, user, pword, host, port):
   import matchData
   import evaluatePred
   import os
-  mapTypes = ['single', 'multi', 'conflict']
-  predLs = {}
-  for mapType in mapTypes:
-    intacts = queryDevice.queryDevice("SELECT mpf.protein_accession,mpf.domain,mpf.molregno,  pfd.start, pfd.end FROM map_pfam mpf JOIN pfam_domains pfd ON pfd.protein_accession = mpf.protein_accession WHERE mpf.maptype = '%s' AND mpf.domain = pfd.domain"% mapType, release, user, pword, host, port)
-    predList = matchData.pdbePredicted(pdbDict,  intacts, molDict, release, mapType)
-    predLs[mapType] = predList
 
-  specStr = evaluatePred.prepPlot(predLs, mapTypes )
-  print specStr
-  os.system("R CMD BATCH --vanilla -%s -%s -%s stackBarPlot.R"%(specStr, 'validationBarplot.pdf',3))
-  import sys
-  sys.exit()
+  intacts = queryDevice.queryDevice("SELECT mpf.protein_accession,mpf.domain,mpf.molregno, pfd.start, pfd.end, mpf.maptype, md.chembl_id FROM map_pfam mpf JOIN pfam_domains pfd ON pfd.protein_accession = mpf.protein_accession JOIN molecule_dictionary md ON md.molregno = mpf.molregno WHERE mpf.domain = pfd.domain", release, user, pword, host, port)
+
+  # ...against PDBe  
+  pdbDict = matchData.pdbePredicted(pdbDict,  intacts, uniDict)
+  evaluatePred.pdbePredicted(pdbDict, 'prediction', release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s -%s -%s  ecdf.R' % ('prediction', 'PDB' , release))
+  # ...against uniprot
+  uniprotDict = matchData.uniprotPredicted(uniprotDict,  intacts)
+  evaluatePred.uniprotPredicted(uniprotDict, 'prediction', release)
+  os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s  -%s -%s  ecdf.R' % ('prediction', "Uni" , release))
+
+
+  ## Map the overlap
+  import overlap
+  tholds = [50,10,5,1,0.5,0.1,0.05,0.01,0.005,0.001, 0.0005,0.0001, 0.00005,0.000001]
+  overlap.overlap(propDict, tholds, release)  
+
 
   ## Power Law Distribution of domain occurences
   ##  Prepare the data for the power law plot.
@@ -120,8 +138,8 @@ def analysis(release, user, pword, host, port):
   import plplot
   import plplotRaw
   import parse 
-  countFreqs.countLigs(humanTargets, chemblTargets, release ,user, pword, host, port)
-  countFreqs.countDoms(humanTargets, pfamDict)
+  countFreqs.countLigs(humProtCod.keys(), chemblTargets, release ,user, pword, host, port)
+  countFreqs.countDoms(humProtCod.keys(), pfamDict)
   filenames = ['genFreq.tab', 'domLigs.tab', 'targLigs.tab']
 
   for filename in filenames:
@@ -133,20 +151,13 @@ def analysis(release, user, pword, host, port):
     plplotRaw.plplotRaw(freqs, filename) 
 
 
-  ## Make scatterplot of rank ordered gene counts vs. ligand counts.  
-  import prepRank
-  import plot
-
-  (genRankL, ligRankL, rectBords) = prepRank.prepRank()
-  plot.rankPlot(genRankL, ligRankL, rectBords)   
-
-
   ## Plot the ligand properties.
   import export
   import os
-  selected = ['7tm_1','Pkinase','Pkinase_Tyr','SH2','SNF','Trypsin']
+  selected = ['Pkinase','Pkinase_Tyr','p450','SNF','Trypsin', 'RVP']
+  export.exportProps(selected,propDict, threshold, release, user, pword, host, port) 
+
   filename = 'data/cmpdProps_pKi%s_chembl%s.tab'%(int(threshold), release)
-  export.exportProps(selected, threshold, release, user, pword, host, port)
-  os.system("/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s plotDens.R"%filename)
+  os.system("/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s pca.R"%filename)
 
  

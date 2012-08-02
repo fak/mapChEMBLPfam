@@ -7,11 +7,11 @@
   Felix Kruger
   momo.sander@googlemail.com
 """                              
-def mapPDs(release, user, pword, host, port): 
+def mapPDs(th, release, user, pword, host, port): 
 
   ## Set the threshold.
   import numpy as np
-  threshold = -np.log10(50*10**(-6))
+  threshold = -np.log10(th*10**(-6))
   
   ## Get a list of all ChEMBL targets.
   import getUniprotTargets
@@ -23,50 +23,27 @@ def mapPDs(release, user, pword, host, port):
   pfamDict = pickle.load(inFile)
   infile.close()    
 
-  ## Load the pdbDict.
-  infile = open('data/pdbDict_chembl13.pkl','r')
-  pdbDict = pickle.load(infile)
-  infile.close()
+  ## Get ligands for targets with single domains.
+  import singleDomain 
+  single = singleDomain.singleDomains(pfamDict, chemblTargets, threshold, release, user, pword, host, port)
 
-  ###    ###    ###     ###  
-  ###    ###    ###     ###
-  ###    ###    ###     ###
-  
-  ### Get primers from pdbe.
-  import mapRes
-  pdbDict = mapRes.mapRes(pdbDict, pfamDict, release)
-  primers = prime.findPrimers(pdbDict, pfamDict)
-  hierDict = prime.hier(primers)
-  
-  # Assign protein targets to the primers.
-  primers = prime.mapTargets(chemblTargets, primers, hierDict)  
-  
-  # Find conflicts.
-  conflicts = findConflicts.findConflicts(primers)
-  confTargets = findConflicts.confTargets(conflicts)
-  
-  #Populate the primer classes with active compounds. Exempt compounds occuring in conflicting cases.
-  mpdct = mpdct.mpdct(confTargets, threshold, release, user, pword, host, port)
-   
-  ## Construct the propDict for targets with one domain and manually 
-  ## insert/delete ligands.
+  ## Construct the propDict for targets with one domain. Manually remove targets (as decribed in Methods section Manual curation) listed in blacklist.tab and add domains that never occur alone listed in whitelist (Pkinase_Tyr). 
   import feedPropDict
   import parse
-  blacklist = parse.col2list('data/removeLigands.txt',1, False)  
+  blacklist = parse.col2list('data/blacklist.tab',1, False)  
   propDict = {}
-  propDict = feedPropDict.dictionary(mpdct, propDict, blacklist, 'first')
+  propDict = feedPropDict.dictionary(single, propDict, blacklist, 'single')
+  propDict = feedPropDict.addLigs(propDict,'manual', 'data/whitelist.tab') 
   
 
-  ## Generate output files for Sam.
-  #import toSam
-  #toSam.toSam(conflicts, threshold, user, pword, host, release, port)
-  ## Use input files from Sam to map the conflicts.
-  #import fromSam
-  #conf = fromSam.fromSam(conflicts, threshold, user, pword, host, release, port)
+  ## Identify targets that have more than one binding site containing 
+  ## domain. 
+  import findConflicts
+  conflicts = findConflicts.findConflicts(pfamDict, valid, chemblTargets)
 
-  ## Insert data for resolved conflicts.
-  #import feedPropDict
-  #propDict = feedPropDict.dictionary(conf, propDict, blacklist,'conflict')
+  ## Insert data for multi domain proteins.
+  import feedPropDict
+  propDict = feedPropDict.dictionary(multi, propDict, blacklist, 'multi')
 
   ## Export the mapping to a mySQL table.
   import export

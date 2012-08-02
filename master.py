@@ -5,7 +5,7 @@ Goes through all necessary steps.
   --------------------
   Author:
   Felix Kruger
-  momo.sander@googlemail.com
+  fkrueger@ebi.ac.uk
 """  
 
 def master(release, user, pword, host, port): 
@@ -19,12 +19,21 @@ def master(release, user, pword, host, port):
   import uniprotChembl
   import analysis
 
+  #Set the threshold for ligand binding to 50 micromolar
+  th = 50
+  
+  # Get Uniprot identifiers for all human proteins.
   os.system("R CMD BATCH --vanilla queryBioMaRt.R")
-  #pfamDomains.pfamDomains(release, user, pword, host, port)
-  mapPfamDomains.mapPDs(release, user, pword, host, port)
-  #pdbDict = pdbChembl.query(release, user, pword, host, port)
-  #uniprotDict = uniprotChembl.query(release, user, pword, host, port)
-  #analysis.analysis(release, user, pword, host, port)
+  # Map Pfam domains and positions to all Uniprot identifiers.
+  pfamDomains.pfamDomains(release, user, pword, host, port)
+  # Map small molecule binding to PFam domains.
+  mapPfamDomains.mapPDs(th, release, user, pword, host, port)
+  # Get all ChEMBL interactions in PDB and binding site residues.
+  pdbDict = pdbChembl.query(release, user, pword, host, port)
+  # Get all ChEMBL interactions in Uniprot and binding site annotation.
+  uniprotDict = uniprotChembl.query(release, user, pword, host, port)
+  # Analyze the data.
+  analysis.analysis(release, user, pword, host, port)
 
 if __name__ == '__main__':
   import sys
@@ -40,7 +49,4 @@ if __name__ == '__main__':
   host = sys.argv[4]
   port = int(sys.argv[5])
 
-  master(release, user, pword, host, port)
-  
-  
-  
+  master(release, user, pword, host, port) 
