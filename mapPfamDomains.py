@@ -34,12 +34,14 @@ def mapPDs(th, release, user, pword, host, port):
   propDict = {}
   propDict = feedPropDict.dictionary(single, propDict, blacklist, 'single')
   propDict = feedPropDict.addLigs(propDict,'manual', 'data/whitelist.tab') 
-  
-
-  ## Identify targets that have more than one binding site containing 
-  ## domain. 
-  import findConflicts
-  conflicts = findConflicts.findConflicts(pfamDict, valid, chemblTargets)
+ 
+  ## Extract a list of validated domains.
+  valid = propDict.keys() 
+ 
+  ## Identify targets with one binding site containing domain and at least one
+  ## other domain.
+  import multiDomain
+  multi = multiDomain.multiDomain(pfamDict, chemblTargets, valid, threshold, release, user, pword, host, port)
 
   ## Insert data for multi domain proteins.
   import feedPropDict

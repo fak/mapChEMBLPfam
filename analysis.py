@@ -92,11 +92,12 @@ def analysis(release, user, pword, host, port):
   evaluatePred.uniprot(uniprotDict, 'within', release)
   os.system('/ebi/research/software/Linux_x86_64/bin/R-2.11.0 CMD BATCH --vanilla -%s -%s -%s  ecdf.R' % ('within', "Uni" , release))
 
-  ## Make a barplot of the group sizes for single, multi-one-valid, multi-no-valid,
-  ## multi-multi-valid.  
+  ## Print a summary of the number of targets and domains covered by the mapping. 
   import groupSize
   import os
-  groupsAll = groupSize.groupSize(chemblTargets, pfamDict)
+  allDomains = groupSize.uniqueDomains(pfamDict)
+  singleDomains = groupSize.singles(chemblTargets, pfamDict)
+  groupsAll = groupSize.groupSize(chemblTargets, pfamDict, singles)
   print "all possible groups (single, none, multi, conflict):",groupsAll
   (single, multi, conflict) = groupSize.groupSizeMap(chemblTargets, release, user , pword, host, port)
   print "all covered targets (single, multi, conflict): ", len(single), len(multi), len(conflict)
@@ -123,9 +124,9 @@ def analysis(release, user, pword, host, port):
 
 
   ## Map the overlap
-  import overlap
-  tholds = [50,10,5,1,0.5,0.1,0.05,0.01,0.005,0.001, 0.0005,0.0001, 0.00005,0.000001]
-  overlap.overlap(propDict, tholds, release)  
+  #import overlap
+  #tholds = [50,10,5,1,0.5,0.1,0.05,0.01,0.005,0.001, 0.0005,0.0001, 0.00005,0.000001]
+  #overlap.overlap(propDict, tholds, release)  
 
 
   ## Power Law Distribution of domain occurences

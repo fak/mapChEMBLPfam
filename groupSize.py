@@ -4,22 +4,35 @@
   calculates the group sizes for each mapping case 
   
   momo.sander@googlemail.com
-"""                              
-def groupSize(chemblTargets, pfamDict): 
+"""                     
+def uniqueDomains(pfamDict):
+  domainCounter = {}
+  for target in pfamDict.keys():
+    for domain in pfamDict[target]['domains']:
+      domainCounter[domain] =0
+  return uniqueDomains
+         
+def singles(chemblTargets, pfamDict):
+  singles = {}
+  for target in chemblTargets:
+    try:
+      count = pfamDict[target]['countUnique']
+      if count == 1:
+        singles[pfamDict[target]['domains'][0]]=0
+    except KeyError:
+      print 'not in Pfam: ', target
+  print "number of domains with mapped ligands: ", len(singles)
+  singles = singles.keys()
+
+  return singles
+
+
+def groupSize(chemblTargets, pfamDict, singles): 
 
   cMult = []
   cSing = []
   cNone = []
   cConf = []
-  
-  winners = []
-  for target in chemblTargets:
-    try:
-      count = pfamDict[target]['countUnique']
-      if count == 1:
-        winners.append(pfamDict[target]['domains'][0])
-    except KeyError:
-      print 'not in Pfam: ', target
 
   for target in chemblTargets:
     try:
@@ -27,7 +40,7 @@ def groupSize(chemblTargets, pfamDict):
       if len(domains) > 1:
         wins = {}
         for domain in domains:
-          if domain in winners:
+          if domain in singles:
             wins[domain] = 0
         if len(wins.keys())>1:
           cConf.append(target)

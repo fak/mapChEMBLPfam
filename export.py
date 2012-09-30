@@ -110,9 +110,57 @@ def exportProps(selected, propDict, threshold, release, user, pword, host, port)
     data/cmpdProps_pKi%s_chembl%s.tab" %(int(threshold), release))
 
 
+def exportFPs(selected, propDict, threshold, release):
 
+  import os
+  import queryDevice
+  from rdkit import Chem
+  from rdkit import DataStructs
+  from rdkit.Chem import AllChem
+  ### Write output to a table.
+  out = open('data/FPdistsed.tab', 'w')
+  out.write('molregno')
+  ### Collect cmpds for domains.
+  lkp = {}
+  for domain in selected: 
+    for mol in propDict[domain]:      
+      molregno = mol[0]
+      smiles = mol[1]      
+      lkp[(molregno, smiles, domain)] = 0
+  ### Convert SMILES to mols and calculate FPs.
+  mols = []
+  fps = []
+  for tri in lkp.keys():
+    molregno = tri[0]
+    smiles = tri[1]
+    domain = tri[2]
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None: 
+      print smiles
+      continue
+    mol.SetProp('domain', domain)
+    mol.SetProp('molregno', str(molregno))
+    mols.append(mol)
+    fp  = AllChem.GetMorganFingerprintAsBitVect(mol,2, nBits = 1024)
+    fps.append(fp)
+    out.write('\t%s'% molregno)
+  out.write('\n') 
+  ### Calculate pairwise distances. 
+  dists = []
+  nfps = len(fps)
+  for i in range(0,nfps):
+    molregno1 = mol.GetProp('molregno')
+    domain = mol.GetProp('domain')
+    fp1 = fps[i]
+    out.write('%s\t%s' % (molregno, domain))
+    for j in range(0, nfps):
+      fp2 = fps[j]
+      dist  = 1-DataStructs.TanimotoSimilarity(fp1, fp2)      
+      out.write('\t%s'% dist)
+    out.write('\n')
+  out.close()
 
-
+  return
 
 
 """
