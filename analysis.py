@@ -7,7 +7,7 @@ Carries out the analysis of the data generated in the previous steps.
   Felix Kruger
   momo.sander@googlemail.com
 """  
-def analysis(release, user, pword, host, port):
+def analysis(th, release, user, pword, host, port):
 
   ####
   #### Load data.
@@ -15,7 +15,7 @@ def analysis(release, user, pword, host, port):
   
   ## Set threshold for all calculations.
   import numpy as np
-  threshold = -np.log10(50*10**(-6))
+  threshold = -np.log10(th*10**(-6))
 
 
   ## Get all ChEMBL targets with a Uniprot accession.

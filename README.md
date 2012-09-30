@@ -6,6 +6,6 @@ The script master.py specifies the workflow and with a local MySQL instance of C
 
 (Substituting release with the ChEMBL release number you are working with - the remaining variables should be replaced by your MySQL user credentials.)
 
-The mapping of small molecule binding to structural domains is detailed in an article in BMC Bioinformatics[BMC Bioinformatics](http://www.biomedcentral.com/bmcbioinformatics/supplements). and if you are interested in the exact commit used to obtain the results - it is on the master branch and will be named "publication commit".
+The mapping of small molecule binding to structural domains is detailed in a[conference supplement](http://www.biomedcentral.com/bmcbioinformatics/supplements) in BMC Bioinformatics. If you are interested in the exact commit used to obtain the results - it is on the master branch and will be named "publication commit".
 
 This commit should reproduce the data and figures presented in the paper.

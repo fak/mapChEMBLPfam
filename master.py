@@ -33,7 +33,7 @@ def master(release, user, pword, host, port):
   # Get all ChEMBL interactions in Uniprot and binding site annotation.
   uniprotDict = uniprotChembl.query(release, user, pword, host, port)
   # Analyze the data.
-  analysis.analysis(release, user, pword, host, port)
+  analysis.analysis(th, release, user, pword, host, port)
 
 if __name__ == '__main__':
   import sys
