@@ -119,7 +119,7 @@ def exportFPs(selected, propDict, threshold, release):
   from rdkit.Chem import AllChem
   ### Write output to a table.
   out = open('data/FPdistsed.tab', 'w')
-  out.write('molregno')
+  out.write('molregno\tdomain')
   ### Collect cmpds for domains.
   lkp = {}
   for domain in selected: 
@@ -149,7 +149,8 @@ def exportFPs(selected, propDict, threshold, release):
   dists = []
   nfps = len(fps)
   for i in range(0,nfps):
-    molregno1 = mol.GetProp('molregno')
+    mol = mols[i]
+    molregno = mol.GetProp('molregno')
     domain = mol.GetProp('domain')
     fp1 = fps[i]
     out.write('%s\t%s' % (molregno, domain))
