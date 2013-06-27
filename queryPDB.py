@@ -49,6 +49,14 @@ def queryPDB(uniDict, intactDict, coordMap, release):
                   if nodeX.nodeName == 'residue': 
                     if nodeX.getAttribute('name') == "a1":
                       pos = nodeX.getAttribute('sequence-number')
+                      chain = nodeX.getAttribute('chain')
+                # This chunk accounts for the offset between PDBe and Uniprot. 
+                try:
+                  offset = coordMap[pdb][chain]
+                except KeyError:
+                  continue
+                pos = int(pos) + offset
+
                 try:
                   pdbDict[target][cmpdId]['bond'].append(bondType)
                   pdbDict[target][cmpdId]['position'].append(pos) 
