@@ -105,23 +105,17 @@ def singleDomains(pfamDict, chemblTargets,threshold, release, user, pword, host,
           except KeyError:
             try:
               single[domain][molregno] = {}
-              single[domain][molregno]['pAfnty']=[]
-              single[domain][molregno]['target']=[]
-	      single[domain][molregno]['actId'] = []
+              single[domain][molregno]['pAfnty']=[aff]
+              single[domain][molregno]['target']=[target]
+	      single[domain][molregno]['actId'] = [actId]
               single[domain][molregno]['smiles']=smiles
-              single[domain][molregno]['pAfnty'].append(aff)
-              single[domain][molregno]['target'].append(target)
-              single[domain][molregno]['actId'].append(actId)
             except KeyError:
               single[domain]={}
               single[domain][molregno] = {}
-              single[domain][molregno]['pAfnty']=[]
-              single[domain][molregno]['target']=[]
-              single[domain][molregno]['actId'] = []
+              single[domain][molregno]['pAfnty']=[aff]
+              single[domain][molregno]['target']=[target]
+              single[domain][molregno]['actId'] = [actId]
               single[domain][molregno]['smiles']=smiles
-              single[domain][molregno]['pAfnty'].append(aff)
-              single[domain][molregno]['target'].append(target)
-              single[domain][molregno]['actId'].append(actId)
   
   outfile = open('data/singleDict_pKi%s_%s.pkl' %(int(threshold), release),'w')
   pickle.dump(single, outfile)
