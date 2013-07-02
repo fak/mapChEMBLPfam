@@ -76,7 +76,7 @@ def queryPDB(uniDict, intactDict, coordMap, release):
     if len(pdbDict[target].keys()) ==0:
       del pdbDict[target]
                           
-  out = open('data/pdbDict_chembl%s.pkl' %(release), 'w')
+  out = open('data/pdbDict_%s.pkl' %(release), 'w')
   pickle.dump(pdbDict, out)
   out.close()
   
