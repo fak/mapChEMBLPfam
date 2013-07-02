@@ -8,7 +8,7 @@ creates pfamDict and pfam_domains
     momo.sander@googlemail.com
 """  
 
-ef getAllTargets(humanTargets, chemblTargets):
+def getAllTargets(humanTargets, chemblTargets):
   tDict = {}
  
   for target in chemblTargets:
