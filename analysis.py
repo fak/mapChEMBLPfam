@@ -7,7 +7,18 @@ Carries out the analysis of the data generated in the previous steps.
   Felix Kruger
   momo.sander@googlemail.com
 """  
-def analysis(th, release, user, pword, host, port):
+def analysis(release):
+
+    import yaml
+    # Read config file.
+    paramFile = open('mpf.yaml')
+    params = yaml.safe_load(paramFile)
+    user = params['user']
+    pword = params['pword']
+    host = params['host']
+    port = params['port']
+    th = params['threshold']
+
 
   ####
   #### Load data.
@@ -21,6 +32,13 @@ def analysis(th, release, user, pword, host, port):
   ## Get all ChEMBL targets with a Uniprot accession.
   import getUniprotTargets
   chemblTargets = getUniprotTargets.getUniprotTargets(release, user, pword, host, port)
+
+  ## Get a list of all human (!) ChEMBL targets
+  humChembl = {}
+  for target in chemblTargets.keys():
+    if chemblTargets[target] == 'Homo sapiens':
+      humChembl[target] = 0
+
   
   ## Read all human protein coding genes
   import parse
@@ -28,11 +46,6 @@ def analysis(th, release, user, pword, host, port):
   #humanTargets = humanProtCodUniq.keys()
   print "We are dealing with %s human proteins" %len(humProtCod.keys())
 
-  ## Get a list of all human (!) ChEMBL targets
-  humChembl = {}
-  for target in chemblTargets:
-    if target in humProtCod.keys():
-      humChembl[target] = 0
 
   ## Load the pfamDict.
   import pickle
@@ -42,13 +55,13 @@ def analysis(th, release, user, pword, host, port):
 
   ## Load the pdbDict.
   import pickle
-  infile = open('data/pdbDict_chembl%s.pkl' %release, 'r')
+  infile = open('data/pdbDict_%s.pkl' %release, 'r')
   pdbDict = pickle.load(infile)
   infile.close()
 
   ## Load the uniprotDict.
   import pickle
-  infile  = open('data/bsDictUniprot_chembl%s.pkl'%release, 'r')
+  infile  = open('data/bsDictUniprot_%s.pkl'%release, 'r')
   uniprotDict = pickle.load(infile)
   infile.close()
   print 'number of targets with binding site information', len(uniprotDict.keys())
