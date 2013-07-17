@@ -124,7 +124,14 @@ def analysis(release):
   import evaluatePred
   import os
 
-  intacts = queryDevice.queryDevice("SELECT mpf.protein_accession,mpf.domain,mpf.molregno, pfd.start, pfd.end, mpf.maptype, md.chembl_id FROM map_pfam mpf JOIN pfam_domains pfd ON pfd.protein_accession = mpf.protein_accession JOIN molecule_dictionary md ON md.molregno = mpf.molregno WHERE mpf.domain = pfd.domain", release, user, pword, host, port)
+  intacts = queryDevice.queryDevice("""SELECT mpf.protein_accession,
+		mpf.domain,mpf.molregno, pfd.start, pfd.end, mpf.maptype,
+	 	md.chembl_id FROM map_pfam mpf 
+	JOIN pfam_domains pfd 
+	  ON pfd.protein_accession = mpf.protein_accession 
+	JOIN molecule_dictionary md 
+	  ON md.molregno = mpf.molregno 
+	WHERE mpf.domain = pfd.domain""", release, user, pword, host, port)
 
   # ...against PDBe  
   pdbDict = matchData.pdbePredicted(pdbDict,  intacts, uniDict)
