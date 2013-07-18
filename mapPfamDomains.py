@@ -8,25 +8,20 @@
     momo.sander@googlemail.com
 """       
 
-def getUniprotTargets(release, user, pword, host, port):
 
-    import queryDevice
-    release_number = int(release.split('\_')[1])
-    if release_number >= 15:
-        rawtargets = queryDevice.queryDevice("""SELECT cs.accession
-        FROM component_sequences cs 
-            JOIN target_components tc 
-            ON tc.component_id = cs.component_id  
-        WHERE db_source IN('SWISS-PROT', 'TREMBL')""", release, user, pword, host, port)
-    else:
-        rawtargets = queryDevice.queryDevice("""SELECT protein_accession
-        FROM target_dictionary 
-        WHERE db_source IN('SWISS-PROT', 'TREMBL')""", release, user, pword, host, port)
-    targets= []
-    for target in rawtargets:
-        targets.append(target[0])
-    return targets
+####
+#### Load parameters.
+####
 
+import yaml
+# Read config file.
+paramFile = open('mpf.yaml')
+params = yaml.safe_load(paramFile)
+user = params['user']
+pword = params['pword']
+host = params['host']
+port = params['port']
+th = params['threshold']
                                               
 def mapPDs(th, release, user, pword, host, port): 
 
