@@ -40,7 +40,7 @@ def add_target_class(level, key, path):
     for line in lines[1:]:
         elements = line.split('\t')
         acc = elements[idx]
-        accessions[acc] = 0
+        accessions[acc] = None
     accStr = "','".join(map(str, accessions.keys()))
     print len(accessions.keys())
     data = queryDevice.queryDevice("""SELECT protein_accession, %s 
