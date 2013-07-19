@@ -4,44 +4,80 @@
   Collection of functions dealing with the primers dictionary.
   
   momo.sander@ebi.ac.uk
-"""                        
-def findPrimers(pdbDict, pfamDict):
-  import numpy as np
+"""                       
+def exportPrimers(primers):
+  outF = open('data/markdownFullCombis_%s.md' % release ,'w')
+  outF.write('|domain combination|pdb accession|ratios|\n')
+  outF.write('|:-----------|------------:|:------------:|\n')
   
+  out = open('data/markdownCombis_%s.md' % release ,'w')
+  out.write('|domain combination|pdb accession|# ChEMBL targets|\n')
+  out.write('|:-----------|------------:|:------------:|\n')
+  for primer in sorted(primers.keys()):
+    els = primer.split(" $$$ ")
+    if len(els) < 2:
+      continue
+    pString = ", ".join(els)
+    pdbs = {}
+    for i, pdb in enumerate(primers[primer]['pdb']):
+      pdbs[pdb[0]] = 0
+      ratios = primers[primer]['ratios'][i]
+      rstring = ', '.join(['%.2f' % x for x in ratios])
+      outF.write("|%s|%s|%s|\n"%(pString, pdb[0], rstring))
+  
+    pdbString = ", ".join(pdbs.keys()[:min(3,len(pdbs.keys()))])
+    ntargs = len(primers[primer]['targets'])
+    out.write("|%s|%s|%s|\n"%(pString, pdbString, ntargs))
+  out.close()
+  outF.close()
+
+ 
+def longPfamDict(pfamDict):
+  longPD = {}
+  for accession in pfamDict.keys():
+    longPD[accession] = {}
+    for i, domain in enumerate(pfamDict[accession]['domains']):
+      start = pfamDict[accession]['start'][i]
+      end = pfamDict[accession]['end'][i]
+      for j in range(start, end):
+        longPD[accession][j] = domain
+  return longPD
+
+
+def findPrimers(pdbDict, longPD, min_res, min_ratio):
+  import numpy as np
   primers = {}
   for target in pdbDict.keys():
+    domains = {}
+    for domain in longPD[target].values():
+      try:
+        domains[domain] += 1
+      except KeyError:
+        domains[domain] = 1
     for cmpdId in pdbDict[target].keys():
       tmpDict = {}
-
-      domains = {}
-      for domain in pfamDict[target]['domains']:
-        domains[domain] = 0
       for domain in domains:
-        ndom = len([x for x in pdbDict[target][cmpdId]['domain'] if x == domain])
-        nall = len(pdbDict[target][cmpdId]['domain'])
+        ndom = len([x for x in longPD[target].keys() if longPD[target][x] == domain and x in pdbDict[target][cmpdId]['position']])
+        nall = len(pdbDict[target][cmpdId]['position'])
         ratio = np.true_divide(ndom, nall)
-        if ndom > 4 and ratio >= 0.3:
+        if ndom >= min_res and ratio >= min_ratio:
           tmpDict[domain] = ratio
-      # print i, len(pdbDict[target][cmpdId]['domain']), len(pdbDict[target][cmpdId]['pdb']), target, cmpdId
+      if len(tmpDict.keys()) <2:
+        continue
       primer= ' $$$ '.join(tmpDict.keys())
       ratios = tmpDict.values()
       pdbs = {}
       for pdb in pdbDict[target][cmpdId]['pdb']:
         pdbs[pdb] = 0
-
       try:
         primers[primer]['ratios'].append(ratios)
         primers[primer]['pdb'].append(pdbs.keys())
         primers[primer]['cmpdId'].append(cmpdId)
       except KeyError:
         primers[primer] = {}
-        primers[primer]['pdb'] = []
-        primers[primer]['cmpdId'] = []
-        primers[primer]['ratios'] = []
-        primers[primer]['cmpdId'].append(cmpdId)
-        primers[primer]['ratios'].append(ratios)
-        primers[primer]['pdb'].append(pdbs.keys())
-      
+        primers[primer]['pdb'] = [pdbs.keys()]
+        primers[primer]['cmpdId'] = [cmpdId]
+        primers[primer]['ratios'] = [ratios]
   return primers            
 
 
