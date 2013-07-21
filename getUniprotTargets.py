@@ -8,7 +8,7 @@ momo.sander@googlemail.com
 import queryDevice
 
 def getUniprotTargets(release, user, pword, host, port):
-    release_number = int(release.split('\_')[1])
+    release_number = int(release.split('_')[1])
     if release_number >= 15:
         rawtargets = queryDevice.queryDevice("""SELECT cs.accession
         FROM component_sequences cs 
