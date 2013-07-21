@@ -13,6 +13,7 @@
 import numpy as np
 import yaml
 import pickle
+import getUniprotTargets
 
 ####
 #### Load parameters.
@@ -29,16 +30,15 @@ th = params['threshold']
 ####
 #### Define functions.
 ####
-def exportPrimers(primers):
+def exportPrimers(primers, outfile):
     '''Write out identified architectures in markdown tables.
-    
     Inputs:
     primers -- dictionary of identified architectures.
     '''
-    outF = open('data/markdownFullCombis_%s.md' % release ,'w')
+    outF = open('%s_long.md' % outfile ,'w')
     outF.write('|domain combination|pdb accession|ratios|\n')
     outF.write('|:-----------|------------:|:------------:|\n')
-    out = open('data/markdownCombis_%s.md' % release ,'w')
+    out = open('%s.md' % outfile ,'w')
     out.write('|domain combination|pdb accession|# ChEMBL targets|\n')
     out.write('|:-----------|------------:|:------------:|\n')
     for primer in sorted(primers.keys()):
@@ -57,8 +57,11 @@ def exportPrimers(primers):
         out.write("|%s|%s|%s|\n"%(pString, pdbString, ntargs))
     out.close()
     outF.close()
+    out = open('%s.pkl'%outfile, 'w')
+    pickle.dump(primers, out)
+    out.close()  
 
-  
+
 def longPfamDict(pfamDict):
     '''Convert pfamDict to long format.
     
@@ -96,7 +99,8 @@ def findPrimers(pdbDict, longPD, min_res, min_ratio):
         for cmpdId in pdbDict[target].keys():
             tmpDict = {}
             for domain in domains:
-                ndom = len([x for x in longPD[target].keys() if longPD[target][x] == domain and x in pdbDict[target][cmpdId]['position']])
+                dom_res = [x for x in longPD[target].keys() if longPD[target][x] == domain and x in pdbDict[target][cmpdId]['position']]
+                ndom = len(dom_res)
                 nall = len(set(pdbDict[target][cmpdId]['position']))
                 ratio = np.true_divide(ndom, nall)
                 if ndom >= min_res and ratio >= min_ratio:
@@ -120,35 +124,8 @@ def findPrimers(pdbDict, longPD, min_res, min_ratio):
     return primers            
 
 
-def hier(primers):
-    """
-    Function:  hier
-    Create a look-up to deal with primer hierarchy.
-    
-    Inputs:
-    primers -- dictionary of identified architectures.    
-    --------------------    
-    momo.sander@ebi.ac.uk
-    """
-    lkp = {}
-    for primer1 in sorted(primers.keys()):
-        elements1 = primer1.split(' $$$ ')
-        for primer2 in sorted(primers.keys()):
-            elements2 = primer2.split(' $$$ ') 
-            count = 0
-            for element in elements1:
-                if element in elements2:
-                    count +=1
-            if count >= len(elements1) and primer1 != primer2:
-                try:  
-                    lkp[primer1].append(primer2)
-                except KeyError:
-                    lkp[primer1] = [primer2]
-    
-    return lkp
-    
 
-def mapTargets(chemblTargets, primers, hierDict):
+def mapTargets(chemblTargets, primers):
     """
     Function:  mapTargets
     Inputs:
@@ -163,37 +140,19 @@ def mapTargets(chemblTargets, primers, hierDict):
             pfamDict[target]
         except KeyError:
             continue
-            
         for primer in primers.keys():
-            alt = False
-            try:
-                altPrimers = hierDict[primer]
-            except KeyError:
-                altPrimers = []
-                
-            for altprim in altPrimers:
-                altDomains = altprim.split(' $$$ ')
-                lkp = {}
-                for domain in altDomains:
-                    if domain in pfamDict[target]['domains']:
-                        lkp[domain] = 0
-                if sorted(altDomains) == sorted(lkp.keys()):
-                    alt = True
-                    print primer, hierDict[primer]
-                    
-            if not alt:
-                domains = primer.split(' $$$ ')
-                lkp = {}  
-                for domain in domains:
-                    if domain in pfamDict[target]['domains']:
-                        lkp[domain] = 0
-                if sorted(domains) == sorted(lkp.keys()):
-                    try:
-                        primers[primer]['targets'][target]=0
-                    except KeyError: 
-                        primers[primer]['targets']={}
-                        primers[primer]['targets'][target]=0
-                        
+           primer_doms = primer.split(' $$$ ')
+           target_doms = {}
+           for dom in primer_doms:
+               if dom in pfamDict[target]['domains']:
+                   target_doms[dom] = 0
+               else:
+                   continue   
+           if len(primer_doms) == len(target_doms):
+              try:
+                  primers[primer]['targets'][target]=0
+              except KeyError: 
+                  primers[primer]['targets']={target:0}
     return primers
 
 
@@ -212,12 +171,16 @@ def master():
     inFile = open('data/protCodPfamDict_%s.pkl' %release, 'r')
     pfamDict = pickle.load(inFile)
     inFile.close()
+    ## Load Uniprot targets.
+    chemblTargets = getUniprotTargets.getUniprotTargets(release, user, pword, host, port)
     ## Convert pfamDict to long format.
     longPD = longPfamDict(pfamDict)
     ## Identify architectures binding sm through multiple domains.
     primers = findPrimers(pdbDict, longPD, min_res, min_ratio)
+    ## Add targets with given architecture.
+    primers = mapTargets(chemblTargets, primers)
     ##  Write architechtures to markdown tables.
-    exportPrimers(primers)  
+    exportPrimers(primers, 'data/interface_%s'%release)  
 
 
 if __name__ == '__main__':
