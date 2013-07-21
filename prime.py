@@ -23,21 +23,21 @@ user = params['user']
 pword = params['pword']
 host = params['host']
 port = params['port']
+release = params['release']
 th = params['threshold']
 
 ####
 #### Define functions.
 ####
 def exportPrimers(primers):
-'''Write out identified architectures in markdown tables.
-
-Inputs:
-primers -- dictionary of identified architectures.
-'''
+    '''Write out identified architectures in markdown tables.
+    
+    Inputs:
+    primers -- dictionary of identified architectures.
+    '''
     outF = open('data/markdownFullCombis_%s.md' % release ,'w')
     outF.write('|domain combination|pdb accession|ratios|\n')
     outF.write('|:-----------|------------:|:------------:|\n')
-    
     out = open('data/markdownCombis_%s.md' % release ,'w')
     out.write('|domain combination|pdb accession|# ChEMBL targets|\n')
     out.write('|:-----------|------------:|:------------:|\n')
@@ -52,7 +52,6 @@ primers -- dictionary of identified architectures.
             ratios = primers[primer]['ratios'][i]
             rstring = ', '.join(['%.2f' % x for x in ratios])
             outF.write("|%s|%s|%s|\n"%(pString, pdb[0], rstring))
-    
         pdbString = ", ".join(pdbs.keys()[:min(3,len(pdbs.keys()))])
         ntargs = len(primers[primer]['targets'])
         out.write("|%s|%s|%s|\n"%(pString, pdbString, ntargs))
@@ -61,11 +60,11 @@ primers -- dictionary of identified architectures.
 
   
 def longPfamDict(pfamDict):
-'''Convert pfamDict to long format.
-
-Inputs:
-pfamDict -- dictionary of Pfam-A domains for Uniprot-ids.
-'''
+    '''Convert pfamDict to long format.
+    
+    Inputs:
+    pfamDict -- dictionary of Pfam-A domains for Uniprot-ids.
+    '''
     longPD = {}
     for accession in pfamDict.keys():
         longPD[accession] = {}
@@ -78,14 +77,14 @@ pfamDict -- dictionary of Pfam-A domains for Uniprot-ids.
 
 
 def findPrimers(pdbDict, longPD, min_res, min_ratio):
-'''Identify architectures that mediate small molecule binding through multiple domain types.
-
-Inputs:
-pdbDict   -- dictionary, of protein-ligand complexes obtained from PDBeMotif.
-longPD    -- dictionary, pfamDict in long format.
-min_res   -- int, minimum number of residues per domain.
-min_ratio -- float, minimum ratio of domain contribution to ligand binding over all binding residues.
-'''
+    '''Identify architectures that mediate small molecule binding through multiple domain types.
+    
+    Inputs:
+    pdbDict   -- dictionary, of protein-ligand complexes obtained from PDBeMotif.
+    longPD    -- dictionary, pfamDict in long format.
+    min_res   -- int, minimum number of residues per domain.
+    min_ratio -- float, minimum ratio of domain contribution to ligand binding over all binding residues.
+    '''
     primers = {}
     for target in pdbDict.keys():
         domains = {}
@@ -98,7 +97,7 @@ min_ratio -- float, minimum ratio of domain contribution to ligand binding over 
             tmpDict = {}
             for domain in domains:
                 ndom = len([x for x in longPD[target].keys() if longPD[target][x] == domain and x in pdbDict[target][cmpdId]['position']])
-                nall = len(pdbDict[target][cmpdId]['position'])
+                nall = len(set(pdbDict[target][cmpdId]['position']))
                 ratio = np.true_divide(ndom, nall)
                 if ndom >= min_res and ratio >= min_ratio:
                     tmpDict[domain] = ratio
@@ -122,15 +121,15 @@ min_ratio -- float, minimum ratio of domain contribution to ligand binding over 
 
 
 def hier(primers):
-"""
+    """
     Function:  hier
     Create a look-up to deal with primer hierarchy.
-
+    
     Inputs:
     primers -- dictionary of identified architectures.    
     --------------------    
     momo.sander@ebi.ac.uk
-"""
+    """
     lkp = {}
     for primer1 in sorted(primers.keys()):
         elements1 = primer1.split(' $$$ ')
@@ -150,16 +149,15 @@ def hier(primers):
     
 
 def mapTargets(chemblTargets, primers, hierDict):
-"""
+    """
     Function:  mapTargets
-
     Inputs:
     primers       -- dictionary of identified architectures.    
     chemblTargets --
     hierDict      --    
     --------------------    
     momo.sander@ebi.ac.uk
-"""
+    """
     for target in chemblTargets:
         try:
             pfamDict[target]
@@ -200,26 +198,26 @@ def mapTargets(chemblTargets, primers, hierDict):
 
 
 def master():
-"""
+    """
     Function:  master
-
+    
     --------------------    
     momo.sander@ebi.ac.uk
-"""
-  ## Load the pdbDict.
-  infile = open('data/pdbDict_%s.pkl' %release, 'r')
-  pdbDict = pickle.load(infile)
-  infile.close()  
-  ## Load the pfamDict.
-  inFile = open('data/protCodPfamDict_%s.pkl' %release, 'r')
-  pfamDict = pickle.load(inFile)
-  inFile.close()
-  ## Convert pfamDict to long format.
-  longPD = longPfamDict(pfamDict)
-  ## Identify architectures binding sm through multiple domains.
-  primers = findPrimers(pdbDict, longPD, min_res, min_ratio)
-  ##  Write architechtures to markdown tables.
-  exportPrimers(primers)  
+    """
+    ## Load the pdbDict.
+    infile = open('data/pdbDict_%s.pkl' %release, 'r')
+    pdbDict = pickle.load(infile)
+    infile.close()  
+    ## Load the pfamDict.
+    inFile = open('data/protCodPfamDict_%s.pkl' %release, 'r')
+    pfamDict = pickle.load(inFile)
+    inFile.close()
+    ## Convert pfamDict to long format.
+    longPD = longPfamDict(pfamDict)
+    ## Identify architectures binding sm through multiple domains.
+    primers = findPrimers(pdbDict, longPD, min_res, min_ratio)
+    ##  Write architechtures to markdown tables.
+    exportPrimers(primers)  
 
 
 if __name__ == '__main__':
