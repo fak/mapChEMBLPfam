@@ -18,7 +18,7 @@ def query(release, user, pword, host, port):
   ## coordinate mappings between pdbe and uniprot.
 
   uniDict = parseUniChem.parse('data/unichemMappings.txt')
-  coordMap = coordMap.coordMap()
+  coordMap = coordMap.coordMap('data/pdb_chain_uniprot.csv')
   intactDict =  getIntactDict.getIntacts(uniDict, release, user, pword, host, port)
   pdbDict = queryPDB.queryPDB(uniDict, intactDict, coordMap,  release)
 

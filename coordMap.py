@@ -6,9 +6,9 @@
   momo.sander@googlemail.com
 """
 
-def coordMap():
+def coordMap(lookupfile):
 
-  infile = open('data/pdb_chain_uniprot.csv', 'r')
+  infile = open(lookupfile, 'r')
   lines = infile.readlines()
   coordMap = {}
   for line in lines[1:]:
