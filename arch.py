@@ -1,7 +1,7 @@
 """
-    Script:  prime.py
+    Script:  arch.py
 
-    Ientifies entries in pdbDict for which small molecule binding is mediated through more than one domain. The main script is prime.
+    Ientifies entries in pdbDict for which small molecule binding is mediated through more than one domain. The main script is arch.
 
     --------------------
     Felix A Kruger
@@ -30,10 +30,10 @@ th = params['threshold']
 ####
 #### Define functions.
 ####
-def exportPrimers(primers, outfile):
+def exportPrimers(archs, outfile):
     '''Write out identified architectures in markdown tables.
     Inputs:
-    primers -- dictionary of identified architectures.
+    archs -- dictionary of identified architectures.
     '''
     outF = open('%s_long.md' % outfile ,'w')
     outF.write('|domain combination|pdb accession|ratios|\n')
@@ -41,24 +41,24 @@ def exportPrimers(primers, outfile):
     out = open('%s.md' % outfile ,'w')
     out.write('|domain combination|pdb accession|# ChEMBL targets|\n')
     out.write('|:-----------|------------:|:------------:|\n')
-    for primer in sorted(primers.keys()):
-        els = primer.split(" $$$ ")
+    for arch in sorted(archs.keys()):
+        els = arch.split(" $$$ ")
         if len(els) < 2:
             continue
         pString = ", ".join(els)
         pdbs = {}
-        for i, pdb in enumerate(primers[primer]['pdb']):
+        for i, pdb in enumerate(archs[arch]['pdb']):
             pdbs[pdb[0]] = 0
-            ratios = primers[primer]['ratios'][i]
+            ratios = archs[arch]['ratios'][i]
             rstring = ', '.join(['%.2f' % x for x in ratios])
             outF.write("|%s|%s|%s|\n"%(pString, pdb[0], rstring))
         pdbString = ", ".join(pdbs.keys()[:min(3,len(pdbs.keys()))])
-        ntargs = len(primers[primer]['targets'])
+        ntargs = len(archs[arch]['targets'])
         out.write("|%s|%s|%s|\n"%(pString, pdbString, ntargs))
     out.close()
     outF.close()
     out = open('%s.pkl'%outfile, 'w')
-    pickle.dump(primers, out)
+    pickle.dump(archs, out)
     out.close()  
 
 
@@ -88,7 +88,7 @@ def findPrimers(pdbDict, longPD, min_res, min_ratio):
     min_res   -- int, minimum number of residues per domain.
     min_ratio -- float, minimum ratio of domain contribution to ligand binding over all binding residues.
     '''
-    primers = {}
+    archs = {}
     for target in pdbDict.keys():
         domains = {}
         for domain in longPD[target].values():
@@ -107,31 +107,30 @@ def findPrimers(pdbDict, longPD, min_res, min_ratio):
                     tmpDict[domain] = ratio
             if len(tmpDict.keys()) <2:
                 continue
-            primer= ' $$$ '.join(tmpDict.keys())
+            arch= ' $$$ '.join(tmpDict.keys())
             ratios = tmpDict.values()
             pdbs = {}
             for pdb in pdbDict[target][cmpdId]['pdb']:
                 pdbs[pdb] = 0
             try:
-                primers[primer]['ratios'].append(ratios)
-                primers[primer]['pdb'].append(pdbs.keys())
-                primers[primer]['cmpdId'].append(cmpdId)
+                archs[arch]['ratios'].append(ratios)
+                archs[arch]['pdb'].append(pdbs.keys())
+                archs[arch]['cmpdId'].append(cmpdId)
             except KeyError:
-                primers[primer] = {}
-                primers[primer]['pdb'] = [pdbs.keys()]
-                primers[primer]['cmpdId'] = [cmpdId]
-                primers[primer]['ratios'] = [ratios]
-    return primers            
+                archs[arch] = {}
+                archs[arch]['pdb'] = [pdbs.keys()]
+                archs[arch]['cmpdId'] = [cmpdId]
+                archs[arch]['ratios'] = [ratios]
+    return archs            
 
 
 
-def mapTargets(chemblTargets, primers):
+def mapTargets(chemblTargets, archs):
     """
     Function:  mapTargets
     Inputs:
-    primers       -- dictionary of identified architectures.    
+    archs       -- dictionary of identified architectures.    
     chemblTargets --
-    hierDict      --    
     --------------------    
     momo.sander@ebi.ac.uk
     """
@@ -140,20 +139,20 @@ def mapTargets(chemblTargets, primers):
             pfamDict[target]
         except KeyError:
             continue
-        for primer in primers.keys():
-           primer_doms = primer.split(' $$$ ')
+        for arch in archs.keys():
+           arch_doms = arch.split(' $$$ ')
            target_doms = {}
-           for dom in primer_doms:
+           for dom in arch_doms:
                if dom in pfamDict[target]['domains']:
                    target_doms[dom] = 0
                else:
                    continue   
-           if len(primer_doms) == len(target_doms):
+           if len(arch_doms) == len(target_doms):
               try:
-                  primers[primer]['targets'][target]=0
+                  archs[arch]['targets'][target]=0
               except KeyError: 
-                  primers[primer]['targets']={target:0}
-    return primers
+                  archs[arch]['targets']={target:0}
+    return archs
 
 
 def master():
@@ -176,11 +175,11 @@ def master():
     ## Convert pfamDict to long format.
     longPD = longPfamDict(pfamDict)
     ## Identify architectures binding sm through multiple domains.
-    primers = findPrimers(pdbDict, longPD, min_res, min_ratio)
+    archs = findPrimers(pdbDict, longPD, min_res, min_ratio)
     ## Add targets with given architecture.
-    primers = mapTargets(chemblTargets, primers)
+    archs = mapTargets(chemblTargets, archs)
     ##  Write architechtures to markdown tables.
-    exportPrimers(primers, 'data/interface_%s'%release)  
+    exportPrimers(archs, 'data/interface_%s'%release)  
 
 
 if __name__ == '__main__':
