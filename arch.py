@@ -1,6 +1,6 @@
 """
     Script:  arch.py
-    Identifies entries in pdbDict for which small molecule binding is mediated
+    Identifies entries in pdb_d for which small molecule binding is mediated
     through more than one domain. The main script is arch.
     --------------------
     Felix A Kruger
@@ -30,76 +30,75 @@ min_ratio = params['min_ratio']
 ####
 #### Define functions.
 ####
-def exportPrimers(archs, outfile):
+def export_archs(arch_d, outfile):
     '''Write out identified architectures in markdown tables.
     Inputs:
-    archs -- dictionary of identified architectures.
+    arch_d -- dictionary of identified architectures.
     '''
     out = open('%s.md' % outfile ,'w')
     out.write('|domain combination|ligand|pdb accession|ratios|# ChEMBL targets|\n')
     out.write('|:-----------|:---------|------------:|:-------|:------------:|\n')
-    for arch in sorted(archs.keys()):
+    for arch in sorted(arch_d.keys()):
         els = arch.split(" $$$ ")
         if len(els) < 2:
             continue
-        pString = ", ".join(els)
-        for i,ligand in enumerate(archs[arch]['cmpdId']):
+        dom_str = ", ".join(els)
+        for i,ligand in enumerate(arch_d[arch]['cmpdId']):
             pdbs = {}
-            for pdb in archs[arch]['pdb'][i]:
+            for pdb in arch_d[arch]['pdb'][i]:
                 pdbs[pdb] = 0
-            ratios = archs[arch]['ratios'][i]
-            rstring = ', '.join(['%.2f' % x for x in ratios])
-            pdbString = ", ".join(pdbs.keys()[:min(3,len(pdbs.keys()))])
-            ntargs = len(archs[arch]['targets'])
-            out.write("|%s|%s|%s|%s|%s|\n"%(pString, ligand,  pdbString, rstring, ntargs))
+            ratios = arch_d[arch]['ratios'][i]
+            r_str = ', '.join(['%.2f' % x for x in ratios])
+            pdb_str = ", ".join(pdbs.keys()[:min(3,len(pdbs.keys()))])
+            n_targs = len(arch_d[arch]['targets'])
+            out.write("|%s|%s|%s|%s|%s|\n"%(dom_str, ligand,  pdb_str, r_str, n_targs))
     out.close()
-    outF.close()
     out = open('%s.pkl'%outfile, 'w')
-    pickle.dump(archs, out)
+    pickle.dump(arch_d, out)
     out.close()  
 
 
-def longPfamDict(pfamDict):
-    """Convert pfamDict to long format.
+def get_long_pfams(pfam_d):
+    """Convert pfam_d to long format.
     Inputs:
-    pfamDict -- dictionary of Pfam-A domains for Uniprot-ids.
+    pfam_d -- dictionary of Pfam-A domains for Uniprot-ids.
     """
-    longPD = {}
-    for accession in pfamDict.keys():
-        longPD[accession] = {}
-        for i, domain in enumerate(pfamDict[accession]['domains']):
-            start = pfamDict[accession]['start'][i]
-            end = pfamDict[accession]['end'][i]
+    long_pfam_d = {}
+    for accession in pfam_d.keys():
+        long_pfam_d[accession] = {}
+        for i, domain in enumerate(pfam_d[accession]['domains']):
+            start = pfam_d[accession]['start'][i]
+            end = pfam_d[accession]['end'][i]
             for j in range(start, end):
-                longPD[accession][j] = domain
-    return longPD
+                long_pfam_d[accession][j] = domain
+    return long_pfam_d
 
 
-def findArch(pdbDict, longPD, min_res, min_ratio):
+def get_archs(pdb_d, long_pfam_d, min_res, min_ratio):
     """Identify architectures that mediate small molecule binding through
     multiple domain types.
     Inputs:
-    pdbDict   -- dictionary, of protein-ligand complexes obtained from 
+    pdb_d   -- dictionary, of protein-ligand complexes obtained from 
                  PDBeMotif.
-    longPD    -- dictionary, pfamDict in long format.
+    long_pfam_d    -- dictionary, pfam_d in long format.
     min_res   -- int, minimum number of residues per domain.
     min_ratio -- float, minimum ratio of domain contribution to ligand binding
                   over all binding residues.
     """
-    archs = {}
-    for target in pdbDict.keys():
+    arch_d = {}
+    for target in pdb_d.keys():
         domains = {}
-        for domain in longPD[target].values():
+        for domain in long_pfam_d[target].values():
             try:
                 domains[domain] += 1
             except KeyError:
                 domains[domain] = 1
-        for cmpdId in pdbDict[target].keys():
+        for cmpdId in pdb_d[target].keys():
             tmpDict = {}
             for domain in domains:
-                dom_res = [x for x in longPD[target].keys() if longPD[target][x] == domain and x in pdbDict[target][cmpdId]['position']]
+                dom_res = [x for x in long_pfam_d[target].keys() if long_pfam_d[target][x] == domain and x in pdb_d[target][cmpdId]['position']]
                 ndom = len(dom_res)
-                nall = len(set(pdbDict[target][cmpdId]['position']))
+                nall = len(set(pdb_d[target][cmpdId]['position']))
                 ratio = np.true_divide(ndom, nall)
                 if ndom >= min_res and ratio >= min_ratio:
                     tmpDict[domain] = ratio
@@ -108,50 +107,51 @@ def findArch(pdbDict, longPD, min_res, min_ratio):
             arch= ' $$$ '.join(tmpDict.keys())
             ratios = tmpDict.values()
             pdbs = {}
-            for pdb in pdbDict[target][cmpdId]['pdb']:
+            for pdb in pdb_d[target][cmpdId]['pdb']:
                 pdbs[pdb] = 0
             try:
-                archs[arch]['ratios'].append(ratios)
-                archs[arch]['pdb'].append(pdbs.keys())
-                archs[arch]['cmpdId'].append(cmpdId)
+                arch_d[arch]['ratios'].append(ratios)
+                arch_d[arch]['pdb'].append(pdbs.keys())
+                arch_d[arch]['cmpdId'].append(cmpdId)
             except KeyError:
-                archs[arch] = {}
-                archs[arch]['pdb'] = [pdbs.keys()]
-                archs[arch]['cmpdId'] = [cmpdId]
-                archs[arch]['ratios'] = [ratios]
-    return archs            
+                arch_d[arch] = {}
+                arch_d[arch]['pdb'] = [pdbs.keys()]
+                arch_d[arch]['cmpdId'] = [cmpdId]
+                arch_d[arch]['ratios'] = [ratios]
+    return arch_d            
 
 
 
-def mapTargets(chemblTargets, pfamDict, archs):
+def add_targets(chembl_targets, pfam_d, arch_d):
     """
     Function:  mapTargets
     Inputs:
-    archs       -- dictionary of identified architectures.    
-    chemblTargets --
-    pfamDict -- 
+    arch_d       -- dictionary of identified architectures.    
+    chembl_targets --
+    pfam_d -- 
     --------------------    
     momo.sander@ebi.ac.uk
     """
-    for target in chemblTargets:
+    for target in chembl_targets:
         try:
-            pfamDict[target]
+            pfam_d[target]
         except KeyError:
             continue
-        for arch in archs.keys():
+        for arch in arch_d.keys():
            arch_doms = arch.split(' $$$ ')
            target_doms = {}
            for dom in arch_doms:
-               if dom in pfamDict[target]['domains']:
+               if dom in pfam_d[target]['domains']:
                    target_doms[dom] = 0
                else:
                    continue   
            if len(arch_doms) == len(target_doms):
               try:
-                  archs[arch]['targets'][target]=0
+                  arch_d[arch]['targets'][target]=0
               except KeyError: 
-                  archs[arch]['targets']={target:0}
-    return archs
+                  arch_d[arch]['targets']={target:0}
+    return arch_d
+
 
 
 def master():
@@ -161,25 +161,25 @@ def master():
     --------------------    
     momo.sander@ebi.ac.uk
     """
-    ## Load the pdbDict.
+    ## Load the pdb_d.
     infile = open('data/pdbDict_%s.pkl' %release, 'r')
-    pdbDict = pickle.load(infile)
+    pdb_d = pickle.load(infile)
     infile.close()  
-    ## Load the pfamDict.
-    inFile = open('data/protCodPfamDict_%s.pkl' %release, 'r')
-    pfamDict = pickle.load(inFile)
-    inFile.close()
+    ## Load the pfam_d.
+    infile = open('data/protCodPfamDict_%s.pkl' %release, 'r')
+    pfam_d = pickle.load(infile)
+    infile.close()
     ## Load Uniprot targets.
-    chemblTargets = getUniprotTargets.getUniprotTargets(release, user, pword, host, port)
-    ## Convert pfamDict to long format.
-    longPD = longPfamDict(pfamDict)
+    chembl_targets = getUniprotTargets.getUniprotTargets(release, user, pword, host, port)
+    ## Convert pfam_d to long format.
+    long_pfam_d = get_long_pfams(pfam_d)
     ## Identify architectures binding sm through multiple domains.
-    archs = findArch(pdbDict, longPD, min_res, min_ratio)
+    arch_d = get_archs(pdb_d, long_pfam_d, min_res, min_ratio)
     ## Add targets with given architecture.
-    archs = mapTargets(chemblTargets, pfamDict, archs)
+    arch_d = add_targets(chembl_targets, pfam_d, arch_d)
     ##  Write architechtures to markdown tables.
-    exportPrimers(archs, 'data/interface_%s'%release)  
-
+    export_archs(arch_d, 'data/interface_%s'%release)
+      
 
 if __name__ == '__main__':
         import sys
