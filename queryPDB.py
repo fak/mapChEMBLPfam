@@ -1,12 +1,11 @@
+def queryPDB(uniDict, intactDict, coordMap, release):
 """
-  Function:  makeIntactDict
+  Function:  queryPDB
   --------------------
   check if a pdb/msd-id exists for a specified ligand and return molDict[molregno]
   
   momo.sander@googlemail.com
-"""                        
-def queryPDB(uniDict, intactDict, coordMap, release):
-
+"""
   import urllib
   import urllib2
   from xml.dom.minidom import parse  
