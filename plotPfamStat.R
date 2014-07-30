@@ -43,15 +43,53 @@ mainFrame$source <- as.factor(mainFrame$source)
   ggplot(mainFrame[complete.cases(mainFrame),])+
   geom_boxplot(aes(x=source, y = pPfam, fill = source))+
   scale_y_continuous(limits = c(0,1))
-  
-  #ggplot(mainFrame)+
-  #geom_density(aes(y=..density.., x = pPfam, col = source))+
-  #scale_x_continuous(limits = c(0,1))
+
+## @knitr plot_dens 
+  ggplot(mainFrame)+
+  geom_density(aes(y=..density.., x = pPfam, col = source))+
+  scale_x_continuous(limits = c(0,1))
 
 ## @knitr remains
-
   t.test(mainFrame$pPfam[mainFrame$source == 1], mainFrame$pPfam[mainFrame$source == 0])
   
   
+## @knitr plot_ecdf
+  counts <- ecdf(mainFrame$pPfam)(unique(mainFrame$pPfam))*length(mainFrame$pPfam)
+  values <- unique(mainFrame$pPfam)
+  plotFrame <- data.frame(c = counts, v = values)
+  ggplot(plotFrame)+
+  geom_hline(yintercept = 0.5, linetype = 'longdash')+
+  geom_step(aes(c,v), direction='vh', col = 'blue', size = 1)+ 
+  theme_bw()
+
+## @knitr plot_ecdf_pred
+  singleFrame <- mainFrame[mainFrame$mapType == 'single',]
+  counts <- ecdf(singleFrame$pPfam)(unique(singleFrame$pPfam))
+  values <- unique(singleFrame$pPfam)
+  singleFrame <- data.frame(c = counts, v = values, t= 'single')
+
+  multiFrame <- mainFrame[mainFrame$mapType == 'multi',]
+  counts <- ecdf(multiFrame$pPfam)(unique(multiFrame$pPfam))
+  values <- unique(multiFrame$pPfam)
+  multiFrame <- data.frame(c = counts, v = values, t= 'multi')
   
+  plotFrame = rbind(multiFrame, singleFrame)
+
+  ggplot(plotFrame)+
+  geom_hline(yintercept = 0.5, linetype = 'longdash')+
+  geom_step(aes(c,v, col = t), direction='vh',  size = 1)+
+  theme_bw()+
+  theme(legend.position = "none")
+
+
+
+## @knitr sum_up
+  sum_up <- function(data){
+	tt <- ddply(data, .(target_class_L2,mapType),summarize, tt = mean(pPfam), cc= length(pPfam))
+        return(tt)
+  }
+
+
+
+
 
