@@ -48,7 +48,7 @@ def get_el_targets(RELEASE, USER, PWORD, HOST, PORT):
             JOIN assays a 
               ON a.assay_id = a2t.assay_id 
             JOIN activities act 
-              ON act.activity_id = a.assay_id
+              ON act.assay_id = a.assay_id
             WHERE act.standard_type IN('Ki','Kd','IC50','EC50', 'AC50') 
             AND a2t.multi=0 
             AND a2t.complex =0 
@@ -56,10 +56,9 @@ def get_el_targets(RELEASE, USER, PWORD, HOST, PORT):
             AND act.relation = '=' 
             AND assay_type = 'B' 
             AND standard_value < 50000
-            AND dc.dc >1
+            AND dc.dc > 1
             GROUP BY td.protein_accession ORDER BY COUNT(DISTINCT activity_id)""", RELEASE, USER, PWORD, HOST, PORT)
-    return [x[0] for x in data] 
-
+    return data
 
 
 
@@ -86,37 +85,64 @@ def readfile(path, key_name, val_name):
     return  lkp
 
 
-def get_multi_doms(chembl_targets, pfam_d):
+def get_multi_doms(el_targets, pfam_d):
     """Find mandatory multi-domain architectures.
     Inputs:
-    path -- filepath
-    key_name -- name of the column holding the key
-    val_name -- name of the column holding the value
+    el_targets -- list of eligible targets
+    pfam_d -- dictionary of Pfam domains
     """
+    act_lkp = {}
     arch_lkp = {}
     dom_lkp = {}
-    for target in chembl_targets:
+    for target in el_targets:
         try:
-            doms = pfam_d[target]['domains']
+            doms = pfam_d[target[0]]['domains']
         except KeyError:
             print "No entry in Pfam for: %s"% target
             continue
         #inv_doms = [x for x in doms if x not in valid_doms]
-        if len(doms) > 1:#len(inv_doms) == len(doms):
-            arch = ', '.join(sorted(doms))
+        if len(doms) <= 1:
+	    print 'impossible!'#len(inv_doms) == len(doms):
+        arch = ', '.join(sorted(doms))
+        try:
+            arch_lkp[arch] += 1
+            act_lkp[arch] += target[2]
+        except KeyError:
+            arch_lkp[arch] = 1
+            act_lkp[arch] = target[2]
+        for dom in set(doms):
             try:
-                arch_lkp[arch] += 1
+                dom_lkp[dom] += 1
             except KeyError:
-                arch_lkp[arch] = 1
-            for dom in set(doms):
-                try:
-                    dom_lkp[dom] += 1
-                except KeyError:
-                    dom_lkp[dom] = 1
-    return(arch_lkp, dom_lkp)
+                dom_lkp[dom] = 1
+    return(arch_lkp, dom_lkp, act_lkp)
 
 
-
+    
+def get_doms(el_targets):
+    """Find multi-domain architectures.
+    Inputs:
+    el_targets -- list of eligible targets
+    """
+    pfam_lkp = {}
+    tids = [x[0] for x in el_targets]
+    tidstr = "', '".join(str(t) for t in tids)
+    data = queryDevice.queryDevice("""
+            SELECT tid, domain_name 
+            FROM target_components tc
+	    JOIN component_domains cd
+	      ON cd.component_id = tc.component_id
+            JOIN domains d
+	      ON d.domain_id = cd.domain_id
+            WHERE tc.tid IN('%s')""" %tidstr, RELEASE, USER, PWORD, HOST, PORT)  
+    for ent in data:
+        tid = ent[0]
+        dom = ent[1]
+        try:
+            pfam_lkp[tid].append(dom)
+        except KeyError:
+            pfam_lkp[tid] = [dom]
+    return pfam_lkp
 
 def export_archs(arch_lkp, valid_doms, path):
     '''Write out multi-domain architectures in markdown tables.
@@ -131,9 +157,8 @@ def export_archs(arch_lkp, valid_doms, path):
         doms = str(arch[0]).split(', ')
         mapped = ', '.join([x for x in doms if x in valid_doms]) 
         if len(mapped) == 0:
-            mapped = False      
+            mapped = False
         out.write("|%s|%s|%s|\n"%(arch[0], arch[1], mapped))
-   
 
 
 def export_network(arch_lkp, valid_doms, path):
@@ -218,7 +243,7 @@ def master(version):
     ## Load eligible multi-domain targets.
     el_targets = get_el_targets(RELEASE, USER, PWORD, HOST, PORT)
     ## Add targets with given architecture.
-    (arch_lkp, dom_lkp) = get_multi_doms(el_targets, pfam_d)
+    (arch_lkp, dom_lkp, act_lkp) = get_multi_doms(el_targets, pfam_d)
     ##  Write multi-domain architechtures to markdown tables.
     export_archs(arch_lkp, valid_doms, 'data/multi_dom_archs_%s'% RELEASE)  
     ## Write domains from multi-domain architechtures to markdown tables.
