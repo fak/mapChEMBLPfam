@@ -12,31 +12,25 @@ def getRatio(pfamDict,humanTargets, release, user, pword, host, port):
   import queryDevice
   
   for target in pfamDict.keys():
-    try:
-      pfamDict[target]
-    except KeyError:
-      continue    
-    domresids = 0
-    domains = pfamDict[target]['domains']
+    pfamDict[target]['ratio']='NA'
     try:
       seq = humanTargets[target]
-      length  = len(seq)-1
+      seq_len  = len(seq)-1
     except KeyError:
       seq= queryDevice.queryDevice("SELECT protein_sequence FROM target_dictionary WHERE protein_accession = '%s'"%target, release, user, pword, host, port)
       try:
-        length = len(seq[0][0])-1
+        seq_len = len(seq[0][0])-1
       except IndexError:
-        pfamDict[target]['ratio'] = 'NA'
         continue
 
-    i=0
+    dom_len = 0
     for i in range(len(pfamDict[target]['domains'])):
       start  = pfamDict[target]['start'][i]         
       end  = pfamDict[target]['end'][i]
-      approxLen = end - start
-      domresids += approxLen
+      ind_dom = end - start
+      dom_len += ind_dom
                                       
-    ratio = np.true_divide(domresids,length)
+    ratio = np.true_divide(dom_len,seq_len)
     pfamDict[target]['ratio'] = ratio
            
   return pfamDict
