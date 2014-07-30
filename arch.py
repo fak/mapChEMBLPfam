@@ -157,9 +157,8 @@ def add_targets(chembl_targets, pfam_d, arch_d):
 def master():
     """
     Function:  master
-    
     --------------------    
-    momo.sander@ebi.ac.uk
+    momo.sander@googlemail.com
     """
     ## Load the pdb_d.
     infile = open('data/pdbDict_%s.pkl' %release, 'r')
@@ -185,8 +184,7 @@ if __name__ == '__main__':
         import sys
 
         if len(sys.argv) != 1: # the program name and the two arguments
-                print("Parameters are read from mpf.yaml!")
-                sys.exit("Parameters are read from mpf.yaml!")
+            sys.exit("Parameters are read from mpf.yaml!")
 
 
         master() 
