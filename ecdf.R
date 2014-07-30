@@ -20,7 +20,8 @@ infile <- sprintf('data/%s_%s_%s.tab', key , filename, release)
 intable <- read.table(infile, sep = '\t', header = T)
 mainFrame <- as.data.frame(intable)
 
-
+## @knitr ecdf
 pp <- ggplot(mainFrame)+geom_step(aes(unique(pPfam), ecdf(pPfam)(unique(pPfam))*length(pPfam)))
 
+## @knitr save_ecdf
 ggsave(pp, file = sprintf('visual/%s_%s_%s.pdf',key,  release, filename))
