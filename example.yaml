@@ -1,0 +1,7 @@
+--- # Params
+user: <user>
+pword: <password>
+host: <hostname>
+port: <port>
+threshold: <threshold, eg 5 for 10 micromolar>
+release: <release, eg chembl_19>
