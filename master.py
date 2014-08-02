@@ -8,7 +8,7 @@ Goes through all necessary steps.
     fkrueger@ebi.ac.uk
 """  
 
-def master(release, user, pword, host, port): 
+def master(release): 
     
 
     ## Get all human protein coding genes from ensembl and a count of all uniqe domains.
@@ -31,30 +31,26 @@ def master(release, user, pword, host, port):
 
     
     # Get Uniprot identifiers for all human proteins.
-    os.system("R CMD BATCH --vanilla queryBioMaRt.R")
+    #os.system("R CMD BATCH --vanilla queryBioMaRt.R")
     # Map Pfam domains and positions to all Uniprot identifiers.
     #pfamDomains.pfamDomains(release, user, pword, host, port)
     # Map small molecule binding to Pfam domains.
-    mapPfamDomains.mapPDs(th, release, user, pword, host, port)
+    #mapPfamDomains.mapPDs(th, release, user, pword, host, port)
     # Get all ChEMBL interactions in PDB and binding site residues.
-    #pdbDict = pdbChembl.query(release, user, pword, host, port)
+    pdbDict = pdbChembl.query(release, user, pword, host, port)
     # Get all ChEMBL interactions in Uniprot and binding site annotation.
     #uniprotDict = uniprotChembl.query(release, user, pword, host, port)
     # Analyze the data.
-    #analysis.analysis(th, release, user, pword, host, port)
+    #analysis.analysis(release)
 
 if __name__ == '__main__':
     import sys
 
-    if len(sys.argv) < 5:  # the program name and the two arguments
+    if len(sys.argv) != 2:  # the program name and the two arguments
 
-        sys.exit("Must specify release, user, pword, host, port")
+        sys.exit("Must specify release")
 
         
     release = sys.argv[1]
-    user = sys.argv[2]
-    pword = sys.argv[3]
-    host = sys.argv[4]
-    port = int(sys.argv[5])
 
-    master(release, user, pword, host, port) 
+    master(release) 
